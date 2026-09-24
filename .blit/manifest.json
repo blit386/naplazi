@@ -1,0 +1,571 @@
+{
+  "kitVersion": "1.7.0",
+  "files": [
+    {
+      "path": ".claude/hooks/session-start.sh",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "f976c7f543c46d77c6fe1ea68ec0436c4936bdbb7a8d56da50dcc70bd7810144"
+    },
+    {
+      "path": ".claude/hooks/shell-safety.sh",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "5a1a008c8827fc80182038b9f260e67f67d745d9cc18f9d2e77700922d236346"
+    },
+    {
+      "path": ".claude/rules/blit-api-names.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "d3629e89606b8dd02d9de6656a29c416569b44d70dd3390823378cbb1c23b2d3"
+    },
+    {
+      "path": ".claude/rules/blit-integer-coords.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "76e4376d61adcdbe43780f7bc4f5f37e233396138efa6441bf50cb2072490ded"
+    },
+    {
+      "path": ".claude/settings.json",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "a920b33afbb6873329f9bfbc9f41cce9e92e70ee7fc220c431d8b3e254ed1f8a"
+    },
+    {
+      "path": ".claude/skills/add-crt-effect/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "1ded6ac62b8e4be94205a02b5b5e5e3c0cb66870e96f2d0e242dcddb9ab54536"
+    },
+    {
+      "path": ".claude/skills/add-sprite/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "565b402ca05b9f6c2aa4096fe662d4e1c3151079736c06f5026a5981571755d0"
+    },
+    {
+      "path": ".claude/skills/add-text/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "b1295b9e25aaf92e3ff4bf658635326828e8f3298a4863b7f46ebf3cfc8dcb47"
+    },
+    {
+      "path": ".claude/skills/animate-the-palette/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "f7785e9063baf39947f04c359a880abd90bdf24e8cedf6719c5ba813b7500d1a"
+    },
+    {
+      "path": ".claude/skills/ask-the-docs/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "28a4b9a48176dbeeaa0e27c4ddf65630fea7d5c99420e436840e9be364e9c6a8"
+    },
+    {
+      "path": ".claude/skills/design-a-sound/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "b8ba31ba8e3674ac2d92bb87572a822bd8d74b012832923b9add3a9a6d0738b5"
+    },
+    {
+      "path": ".claude/skills/draw-shapes/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "6f05a6b2ada1591d0903c0abd263c6337a8f02bb0ab4016b7bd73356d633d9dc"
+    },
+    {
+      "path": ".claude/skills/fix/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "adf16afcf87e2fcda74aa81f3afb5a223ec6376549b8ed32793f0f48e5f741ee"
+    },
+    {
+      "path": ".claude/skills/keep-it-fast/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "fd07cfc6f4f010604f2ce85de3a704591d70839a8f000ec90950640f5998f069"
+    },
+    {
+      "path": ".claude/skills/migrate/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "326567359c9ce1e18598a033c1fc5b3dddf902832c0b4ef510f8ce96cf8063cf"
+    },
+    {
+      "path": ".claude/skills/move-and-time/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "fd1a7322b60f1c9a8c313b7cc96080049a24a8e0d4de03010ba5fe746247db91"
+    },
+    {
+      "path": ".claude/skills/play-a-sound/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "55192d9709517b46f92bbee71dba7c5d74dd24d5420d357c1b4f8bea5c1e3710"
+    },
+    {
+      "path": ".claude/skills/read-gamepad/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "efee20b8cc0cfaf75e71ec6b8964add4941d3ee4e06c054490a8546d0186242b"
+    },
+    {
+      "path": ".claude/skills/read-keyboard/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "c1d83bcea4993367f58321186fbdc930d53be5f58d10f1a7240af76c67edb4ca"
+    },
+    {
+      "path": ".claude/skills/read-pointer/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "9800f1e75d2fdeeeec1dd4f1d93c8083cfbb2894bb7a7a3c63db73c5a041fb29"
+    },
+    {
+      "path": ".claude/skills/run/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "246c59b4d1a0bbdf11a52783c298042ff8345ea8b823f967db3a066259ef44bf"
+    },
+    {
+      "path": ".claude/skills/save-a-screenshot/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "2af17765d23a5e878ea04fa21bf846d634dfdbf06a11c462d4bd5ab86c84dcb4"
+    },
+    {
+      "path": ".claude/skills/scroll-with-camera/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "94b9fa7c3e72ef89fd735436c61c0a520636ca06e71fc57f279834fc06e0e39d"
+    },
+    {
+      "path": ".claude/skills/share-the-game/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "e605facefde31a3d0577b5678a037316b92575e3a2e50a18d9bc0b50c30c4e9d"
+    },
+    {
+      "path": ".claude/skills/show-a-loading-screen/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "06e3f3af7983b9d6ceb95738c4dac86df1d727124eb14de5063367cdb624823e"
+    },
+    {
+      "path": ".claude/skills/show-debug-overlay/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "5bad3bffc4307f061aab984268c49b34beb070ba2ef7c7a96b8b8bcc32481c72"
+    },
+    {
+      "path": ".claude/skills/smooth-the-motion/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "96fc062515570aa4df47dbc6f48c2e3e2fd6bd815d6a1c2ea25d81f93c4bc57f"
+    },
+    {
+      "path": ".claude/skills/structure-a-game/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "042995d4a8451bfaede352bab2fcbdbde50defd9c09b42cfe9d927f7eb14f35b"
+    },
+    {
+      "path": ".claude/skills/use-dev-mode/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "584ced232d8eb2f109f893b5b987747d4b8e2377b984d66bc712ba32690ed615"
+    },
+    {
+      "path": ".claude/skills/use-hot-reload/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "c17454bc838dd10f0d718426e6fd41e8451ece6d7324e7052e251f6166f8bc8f"
+    },
+    {
+      "path": ".claude/skills/use-noise/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "1847e23cf892ca47276d96bfd083f99f3322b8f076c224c9492d722b2dedd24b"
+    },
+    {
+      "path": ".claude/skills/use-palette/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "9fd27c5a6c45569d42020332ae791c726bae018573d188b84bbf8490c7f619df"
+    },
+    {
+      "path": ".claude/skills/use-random/SKILL.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "c28f3cd6cbb1d3396d75c2c20713ef2260a7f9fc3cddf15f5ce212cd89df64e1"
+    },
+    {
+      "path": ".cursor/commands/add-crt-effect.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "0cdb2724db41320b1d8f39d8ee02192f2b6a8d85573be8aa949f8454ccba358d"
+    },
+    {
+      "path": ".cursor/commands/add-sprite.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "d515f6c25be85a8ab1b2f1be1a3f4f9140a1cb79f4128d16948c123ebfc6a74c"
+    },
+    {
+      "path": ".cursor/commands/add-text.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "33a1024737fdd49c106d79f741ed51044b660566532eab87baccdd29e647acd4"
+    },
+    {
+      "path": ".cursor/commands/animate-the-palette.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "1e0a2c28367e60c1d5be8017353481e5a17e80cd02246d23f3cc6bb3de75c1d9"
+    },
+    {
+      "path": ".cursor/commands/ask-the-docs.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "4f9f6e1224dc8224730badeeb45985a8c57396550d77c0a0f663c5a4eced0912"
+    },
+    {
+      "path": ".cursor/commands/design-a-sound.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "b80efa786485260cc54adcfcb2f5325484083d6097bc8413f972e63a1c24cbb3"
+    },
+    {
+      "path": ".cursor/commands/draw-shapes.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "6e5181bd33def0baf91b8efe3b6f176afc0283455c9980f7e9da0c3cc7fdba97"
+    },
+    {
+      "path": ".cursor/commands/fix.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "463f2d144f66d54cd05295ca628361a985f4d690765376ad1df9e050c983e8f1"
+    },
+    {
+      "path": ".cursor/commands/keep-it-fast.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "c2b06676b14bf0defa0584b7b10fe22b319b102a23c1e421219932eb1e0a02a6"
+    },
+    {
+      "path": ".cursor/commands/migrate.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "f7f7d181b61a03aa65b2b89a59cc242a4dac0c211bd52b355741db8618acd8df"
+    },
+    {
+      "path": ".cursor/commands/move-and-time.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "a7ecfd8d13b86753afe1617bd9454724c6d5d5eac6a434c0229d6288f124cdf8"
+    },
+    {
+      "path": ".cursor/commands/play-a-sound.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "45f48a95a8d6e7f3601442cf852f8305d2422bf10791eac6bf75d847ea9118cc"
+    },
+    {
+      "path": ".cursor/commands/read-gamepad.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "2461579f30372fb6340cd4f761f59ef12e00270004fdf50175ed94fb669ac249"
+    },
+    {
+      "path": ".cursor/commands/read-keyboard.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "d7e74949a64fc89774e1fe319e60fcc271a9aa15ad867b436523004f73a77f39"
+    },
+    {
+      "path": ".cursor/commands/read-pointer.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "04ec0576b2755e74bd4c324f7a6bfe558b7ea4d8ae5fa07aff59b14fa2ec35dc"
+    },
+    {
+      "path": ".cursor/commands/run.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "85856e8dc1ff7527b777a2055e988bf1a238014cff2f0c0ae8d63eadb393c2de"
+    },
+    {
+      "path": ".cursor/commands/save-a-screenshot.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "1db763c7ba2ebb54d0f9525680acece64cdea749186a75db619bd0aff8a8454a"
+    },
+    {
+      "path": ".cursor/commands/scroll-with-camera.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "f8b9f63594528d5f0a0479d8131098e90bb5f911db7c0f71bc6839790fe32460"
+    },
+    {
+      "path": ".cursor/commands/share-the-game.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "2a0a8540765151de42b4a2c2e4170014107d7968bcf4f5ff5de12e9e67ab2a37"
+    },
+    {
+      "path": ".cursor/commands/show-a-loading-screen.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "b127bcdb93e6763c637e49b030dfcdc5fd8267165fc0ab52d199486306e35288"
+    },
+    {
+      "path": ".cursor/commands/show-debug-overlay.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "9c1ac4eb290e414b19d963166d03830c3c6a142fa0c8d71be7f8668a378b456f"
+    },
+    {
+      "path": ".cursor/commands/smooth-the-motion.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "60f8fb863361861307b489eb10d0ee468d70888b0fceb39017590e3b976392c8"
+    },
+    {
+      "path": ".cursor/commands/structure-a-game.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "c754af0b20182d657fb075d4899c51b908ee7ec7ae7f42bbcaf6cd12363fc204"
+    },
+    {
+      "path": ".cursor/commands/use-dev-mode.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "4fa8845831aefc052e43f2c8ab2e6c18a3de2e3b074ed08b73265ab301969e0e"
+    },
+    {
+      "path": ".cursor/commands/use-hot-reload.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "484f82ff378d51ef0052cecad89d222f6a4651f865ac3d7be5794b919b4da9bf"
+    },
+    {
+      "path": ".cursor/commands/use-noise.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "d94550785246577dde2bc515e315554427abe71d74b51b1e8d74b56447c4ad0b"
+    },
+    {
+      "path": ".cursor/commands/use-palette.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "0f4b26956bf2abdc989045a849ebdc4e88fa0c81a4b5cf203f92ebaddbaac5c4"
+    },
+    {
+      "path": ".cursor/commands/use-random.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "10c75d2c0a69bce2b8f1c7a8a4262a4d5e4efd1b08ec266a2a8d87733da8cf6d"
+    },
+    {
+      "path": ".cursor/hooks.json",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "17167f46a4de3089b5568927657b5c7fe40d36e7e584e7bbe0e521d4250a7fc3"
+    },
+    {
+      "path": ".cursor/hooks/shell-safety.sh",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "5a1a008c8827fc80182038b9f260e67f67d745d9cc18f9d2e77700922d236346"
+    },
+    {
+      "path": ".cursor/mcp.json",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "69a6b8525c026172a50f873b74046e815270564667a23edc07b7ad42bf999b7d"
+    },
+    {
+      "path": ".cursor/rules/blit-api-names.mdc",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "b2d9086005423bb7e47ae20c8abc60f328705c8832b1b32318a9fdb4fc508e6a"
+    },
+    {
+      "path": ".cursor/rules/blit-integer-coords.mdc",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "babc6371e1265b0c5d15e576f5c819829acdb8520463264cd29e338a0c7adb13"
+    },
+    {
+      "path": ".editorconfig",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "a715709d594d3be9435a2dab3a0dcd1e3940ee543ffdacc5ac841f6520cf643d"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "88695ca188639e888bfb5e64d80deeb75751c7434f53f4646f0e3e32c92afa4c"
+    },
+    {
+      "path": ".gitignore",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "bfa5f8365a7772ac194672c136ef9187d729bc5008ae858106307be49d390578"
+    },
+    {
+      "path": ".mcp.json",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "de4640afb5abe73ffa42d7ddf47525d8bc1a0bea4e260da9f5a59e4bc7ca0640"
+    },
+    {
+      "path": ".prettierignore",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "93ebda467cbfd97897a31834cd2b481dc2e5fb4fbed1d29f9c2d9d25a50526ef"
+    },
+    {
+      "path": "AGENTS.md",
+      "class": "shared",
+      "kitVersion": "1.7.0",
+      "sha256": "b6da9a5329785e594110845626b8a536b6c2e75b4ec2c059215a1334db821b65"
+    },
+    {
+      "path": "biome.json",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "c73bb2c7009bea0203c344842315bf05609edf694327180f95a4faeebc04da22"
+    },
+    {
+      "path": "CLAUDE.md",
+      "class": "shared",
+      "kitVersion": "1.7.0",
+      "sha256": "5a8d96f4653a90586b81e005ec858c3811b76c5c9333db25649d39a17f451307"
+    },
+    {
+      "path": "docs/audio.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "d6b943ad284f00e224120ad4203912a7606b3f084c6194dfdf2e39f1255b87fd"
+    },
+    {
+      "path": "docs/basics.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "b0d442ad09ccbe2b8bbe574aa7f308d569a8a4c7164a4ffab40add84d97e6f2d"
+    },
+    {
+      "path": "docs/drawing.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "71f457cf44d613837db1f9d450236c2254570ab74a193eab97a0c397504e55ff"
+    },
+    {
+      "path": "docs/getting-started.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "d17b6b4669d6e31b9e1fb6b90fd521ffc6e391c170448eef3c7a2aa4b407429d"
+    },
+    {
+      "path": "docs/hot-reload.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "6d4fb4bbcaa41b2f25f01b71efc54aa0981b69362770513a0188ce0beb7ca93a"
+    },
+    {
+      "path": "docs/input.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "b10f7518d6d3b82407b502105f90f455e74313745af8ca85512c48d5084cb052"
+    },
+    {
+      "path": "docs/palette.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "2426656a3250b99dcb8b537e38477faa6395b20629ce5302ece1ca4903f3d287"
+    },
+    {
+      "path": "docs/random.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "0b66d5755673649bb0bea9df7d72b1a5c98c2f4a190b9ee2f9374bd77ff3ce52"
+    },
+    {
+      "path": "docs/when-something-breaks.md",
+      "class": "kit-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "252dbd9e5735047b6ed84ae9b678a4c68d8e45c595796cfd9889506e6db9a9ed"
+    },
+    {
+      "path": "index.html",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "0fba3bccb8663e2b2c6619b3caf43eacdbbdce881e0e81886e000129ceca7af3"
+    },
+    {
+      "path": "package.json",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "733da9c33d054552c814a15bc32510258d189656e3ab354fb8be76b04f76eae1"
+    },
+    {
+      "path": "prettier.config.js",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "b0ba3cc1c5ffc1bf064ac3cca8d1c4ee683971ac966402d2d71f0a7bb44134d0"
+    },
+    {
+      "path": "public/.gitkeep",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "README.md",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "194f3e790e6fa6587b94fe41d2b0b4b544bf0aa920d2335f91508689226549b8"
+    },
+    {
+      "path": "scripts/prettier-plugin-compact-tables.mjs",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "ab173444170c06ccdf568f575ce9c27aabdf746116dc63397c97bc9ba735d430"
+    },
+    {
+      "path": "src/game.ts",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "78dd8ff0fb3d9a00807d85b96c8a82443d243c26c4a78e8bca63b62654580487"
+    },
+    {
+      "path": "tsconfig.json",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "18c8f1e3dda7428ceb3547964eddb36f6760966ad12fa19233becc30b30dc2d8"
+    },
+    {
+      "path": "vite.config.js",
+      "class": "user-owned",
+      "kitVersion": "1.7.0",
+      "sha256": "f68185c7aae845fad9fef706fe712c86764f149780d205c51620f219fceb56dd"
+    }
+  ],
+  "createdAt": "2026-09-24T13:29:54.915Z",
+  "vars": {
+    "projectName": "naplazi",
+    "packageName": "naplazi",
+    "blit386Version": "^1.7.0",
+    "kitVersion": "^1.7.0",
+    "pmInstall": "pnpm install",
+    "pmRunDev": "pnpm run dev",
+    "pmRunBuild": "pnpm run build",
+    "pmRunFormat": "pnpm run format",
+    "pmRunLint": "pnpm run lint",
+    "entryFile": "/src/game.ts",
+    "gameFile": "src/game.ts"
+  }
+}

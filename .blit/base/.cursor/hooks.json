@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "pnpm run format",
+        "matcher": "Write|TabWrite",
+        "timeout": 30,
+        "failClosed": false
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "sh .cursor/hooks/shell-safety.sh",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}
