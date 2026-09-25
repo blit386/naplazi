@@ -8,6 +8,8 @@ yarn.lock
 # Dependencies and build output
 node_modules/
 dist/
+.remember/
+.wrangler/
 
 # Pristine kit copies used by `blit agents sync` to detect your edits.
 # Formatting these would make sync think you changed files you did not.

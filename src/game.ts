@@ -132,7 +132,10 @@ class Game {
         }
 
         // Draw the paddle.
-        blit386.BT.drawRectFill(new blit386.Rect2i(this.paddlePos.x, this.paddlePos.y, PADDLE_WIDTH, PADDLE_HEIGHT), COLOR_PADDLE);
+        blit386.BT.drawRectFill(
+            new blit386.Rect2i(this.paddlePos.x, this.paddlePos.y, PADDLE_WIDTH, PADDLE_HEIGHT),
+            COLOR_PADDLE,
+        );
 
         // Show the score and lives in the top-left corner.
         blit386.BT.systemPrint(new blit386.Vector2i(6, 6), COLOR_TEXT, `Score ${this.score}`);

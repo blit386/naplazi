@@ -146,3 +146,6 @@ Add project-specific notes for Claude here. This section is yours.
   `BLIT386_ENGINE=npm` forces the npm package.
 - Engine source edits full-reload the page by design; game code and `public/` assets still hot-swap.
 - `pnpm run deploy` builds and uploads to Cloudflare Pages (project `naplazi`) from this machine.
+- Tooling mirrors blit386: pre-commit runs lint-staged (Biome, Prettier, cspell) and commitlint; pre-push and CI run
+  `pnpm run preflight` (format:check, typecheck, spellcheck, knip, build). Agent edits are formatted per file by
+  `scripts/format-file.sh`. New words the spellchecker flags go in `cspell.json`.

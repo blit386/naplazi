@@ -3,3 +3,28 @@ dist/
 .DS_Store
 *.log
 .remember/
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+
+# Wrangler (Cloudflare Pages deploy) local state
+.wrangler/
+
+# Generated files
+vite.config.*.timestamp-*
+*.tsbuildinfo
+
+# Claude Code (skills, rules, settings.json are tracked)
+.claude/settings.local.json
+.claude/worktrees/
+
+# IDE and editor files (shared format-on-save settings are tracked)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.iml
+.zed/*
+!.zed/settings.json

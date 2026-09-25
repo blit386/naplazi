@@ -1,0 +1,6 @@
+{
+  "*.{ts,js,cjs,mjs}": ["biome check --write --no-errors-on-unmatched", "cspell --no-progress --no-must-find-files"],
+  "*.{json,jsonc}": ["biome check --write --no-errors-on-unmatched"],
+  "*.{md,mdx,mdc}": ["prettier --write", "cspell --no-progress --no-must-find-files"],
+  "*.{yaml,yml}": ["prettier --write"]
+}

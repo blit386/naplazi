@@ -1,0 +1,30 @@
+# Normalize text files to LF on checkout (portable across macOS / Linux / Windows)
+* text=auto eol=lf
+
+# Generated / lockfile - suppress noisy diffs in GitHub linguist
+pnpm-lock.yaml linguist-generated
+
+# Binary assets
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.mp4 binary
+*.mov binary
+*.avi binary
+*.webm binary
+*.mp3 binary
+*.wav binary
+*.flac binary
+*.ogg binary
+*.m4a binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+*.zip binary
+*.rar binary
+*.7z binary

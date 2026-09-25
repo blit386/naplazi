@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "language": "en",
+  "allowCompoundWords": true,
+  "dictionaries": ["typescript", "node", "html", "css", "npm", "softwareTerms"],
+  "words": ["biomejs", "blit386", "BLIT386", "commitlint", "llms", "naplazi", "pnpm", "vancura", "Vite"],
+  "flagWords": ["cant", "dont", "hte", "teh", "wont"],
+  "ignorePaths": [
+    "*.map",
+    "*.min.js",
+    ".git",
+    ".pnpm-store",
+    "cspell.json",
+    "dist",
+    "node_modules",
+    "pnpm-lock.yaml",
+    ".blit",
+    ".claude",
+    ".cursor",
+    ".remember",
+    ".wrangler",
+    "docs",
+    "AGENTS.md"
+  ],
+  "ignoreRegExpList": ["/#[0-9A-Fa-f]{3,8}/", "/0x[0-9A-Fa-f]+/", "/@[a-zA-Z0-9_-]+\\/[a-zA-Z0-9_-]+/"]
+}

@@ -11,11 +11,15 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "format": "biome format --write . && prettier --write \"**/*.{md,mdx,mdc,yml,yaml}\"",
-    "format:check": "biome format . && prettier --check \"**/*.{md,mdx,mdc,yml,yaml}\"",
+    "format": "biome check --write . && prettier --write \"**/*.{md,mdx,mdc,yml,yaml}\"",
+    "format:check": "biome check . && prettier --check \"**/*.{md,mdx,mdc,yml,yaml}\"",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
-    "deploy": "vite build && wrangler pages deploy dist --project-name=naplazi --branch=main"
+    "spellcheck": "cspell \"src/**/*.{ts,js}\" \"*.md\" --no-progress",
+    "knip": "knip",
+    "preflight": "pnpm run format:check && pnpm run typecheck && pnpm run spellcheck && pnpm run knip && pnpm run build",
+    "deploy": "vite build && wrangler pages deploy dist --project-name=naplazi --branch=main",
+    "prepare": "husky"
   },
   "dependencies": {
     "blit386": "^1.7.0"
@@ -23,6 +27,12 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.2",
     "@blit386/kit": "^1.7.0",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
+    "cspell": "^10.3.3",
+    "husky": "^9.1.7",
+    "knip": "^6.38.0",
+    "lint-staged": "^17.5.1",
     "prettier": "^3.9.6",
     "typescript": "^5.9.3",
     "vite": "^8.0.16",
