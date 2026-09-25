@@ -149,3 +149,9 @@ Add project-specific notes for Claude here. This section is yours.
 - Tooling mirrors blit386: pre-commit runs lint-staged (Biome, Prettier, cspell) and commitlint; pre-push and CI run
   `pnpm run preflight` (format:check, typecheck, spellcheck, knip, build). Agent edits are formatted per file by
   `scripts/format-file.sh`. New words the spellchecker flags go in `cspell.json`.
+- Agents play-test with `pnpm run play` (`scripts/play.mjs`, drives the local Chrome or Edge through playwright-core):
+  see the `test-the-game` skill (`.claude/skills/`, which Cursor 2.4+ reads too). Both are hand-written stand-ins until
+  the kit ships `blit play` and its own skill (BT-528). Dev builds expose `window.__game.state()`; `?seed=N` repeats a
+  run.
+- `BLIT386_ENGINE_DIR=<path to packages/blit386>` points dev and build at another engine checkout (a worktree) instead
+  of `../../blit386/packages/blit386`. Typecheck still reads the main checkout's types.

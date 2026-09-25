@@ -14,12 +14,18 @@ import { defineConfig } from 'vite';
 // monorepo sits next to this game, both dev and build use the engine straight
 // from its source, so engine edits show up here without publishing. Anywhere
 // else (CI, another clone) the npm package is used. Set BLIT386_ENGINE=npm to
-// force the npm package locally.
+// force the npm package locally, or BLIT386_ENGINE_DIR to test an engine in
+// another checkout (a worktree's packages/blit386).
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const ENGINE_DIR = resolve(__dirname, '../../blit386/packages/blit386');
+const ENGINE_DIR = resolve(__dirname, process.env.BLIT386_ENGINE_DIR ?? '../../blit386/packages/blit386');
 const ENGINE_SRC = resolve(ENGINE_DIR, 'src') + sep;
 const isLocalEngine = existsSync(resolve(ENGINE_SRC, 'BLIT386.ts')) && process.env.BLIT386_ENGINE !== 'npm';
+
+// Asking for a specific checkout and silently getting the npm engine instead would make any test meaningless.
+if (process.env.BLIT386_ENGINE_DIR && !isLocalEngine) {
+    throw new Error(`[naplazi] BLIT386_ENGINE_DIR has no engine source at ${ENGINE_DIR} (expected src/BLIT386.ts)`);
+}
 
 /**
  * Creates the blit386() plugin from the local engine, so the hot-reload plugin and runtime

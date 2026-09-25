@@ -28,3 +28,6 @@ vite.config.*.timestamp-*
 *.iml
 .zed/*
 !.zed/settings.json
+
+# Frames saved by `pnpm run play`
+screenshots/

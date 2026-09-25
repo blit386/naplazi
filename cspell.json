@@ -3,7 +3,7 @@
   "language": "en",
   "allowCompoundWords": true,
   "dictionaries": ["typescript", "node", "html", "css", "npm", "softwareTerms"],
-  "words": ["biomejs", "blit386", "BLIT386", "commitlint", "llms", "naplazi", "pnpm", "vancura", "Vite"],
+  "words": ["biomejs", "blit386", "BLIT386", "commitlint", "llms", "naplazi", "pnpm", "vancura", "Vite", "WASD"],
   "flagWords": ["cant", "dont", "hte", "teh", "wont"],
   "ignorePaths": [
     "*.map",
