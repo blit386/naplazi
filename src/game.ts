@@ -1,23 +1,4 @@
-// naplazi - a tiny BLIT386 game called "Catcher".
-//
-// Move the paddle to catch the blocks falling from the top.
-// On a phone or tablet: drag or tap - the paddle centers under your finger.
-// On a computer: move the mouse, or use the left and right arrow keys as a fallback.
-// Catch one: +1 point. Miss one: lose a life. Run out of lives and the game starts over.
-//
-// Every BLIT386 game is one class with up to four methods. We use three of them here:
-//   init()   - runs once at the start (we set up our colors here).
-//   update() - runs about 60 times a second (we move things and check for catches here).
-//   render() - runs about 60 times a second (we draw everything here).
-//
-// Optional hooks you can add later: configure() for screen settings or to turn off the BLIT386
-// splash, onHotReload() to keep score across init() edits while the Vite plugin hot-reloads
-// (see the commented examples below).
-//
-// We do not write a configure() method, so we get the default screen: 320 by 240 pixels at 60 frames per second.
-// Want to learn more? Read AGENTS.md or the docs/ folder next to this file.
-
-import { bootstrap, BT, Color32, Rect2i, Vector2i } from 'blit386';
+import * as blit386 from 'blit386';
 
 // Color slot numbers. We put real colors into these slots in init(), then draw using the numbers.
 // Slot 0 is always transparent, so we start counting at 1.
@@ -37,13 +18,13 @@ const STARTING_LIVES = 3;
 
 class Game {
     // How big the screen is. We read the real size in init().
-    screen: Vector2i = new Vector2i(320, 240);
+    screen: blit386.Vector2i = new blit386.Vector2i(320, 240);
 
     // The paddle's initial position.
-    paddlePos: Vector2i = new Vector2i(0, 0);
+    paddlePos: blit386.Vector2i = new blit386.Vector2i(0, 0);
 
     // The blocks falling right now. Each one is a Vector2i holding its top-left corner.
-    items: Vector2i[] = [];
+    items: blit386.Vector2i[] = [];
 
     // The player's score and lives.
     score: number = 0;
@@ -51,18 +32,18 @@ class Game {
 
     async init(): Promise<boolean> {
         // Remember the screen size so the game fits no matter how big it is.
-        this.screen = BT.displaySize;
+        this.screen = blit386.BT.displaySize;
 
         // Make a palette (a numbered set of colors) and choose four colors.
         // Color32(red, green, blue) - each value goes from 0 (none) to 255 (full).
-        const palette = BT.paletteCreate(16);
+        const palette = blit386.BT.paletteCreate(16);
 
-        palette.set(COLOR_BACKGROUND, new Color32(18, 22, 40)); // dark blue
-        palette.set(COLOR_PADDLE, new Color32(90, 200, 160)); // teal
-        palette.set(COLOR_ITEM, new Color32(240, 180, 70)); // warm yellow
-        palette.set(COLOR_TEXT, new Color32(235, 240, 255)); // near white
+        palette.set(COLOR_BACKGROUND, new blit386.Color32(80, 22, 40));
+        palette.set(COLOR_PADDLE, new blit386.Color32(90, 200, 160));
+        palette.set(COLOR_ITEM, new blit386.Color32(240, 180, 70));
+        palette.set(COLOR_TEXT, new blit386.Color32(235, 240, 255));
 
-        BT.paletteSet(palette);
+        blit386.BT.paletteSet(palette);
 
         // Put the paddle in the middle, near the bottom.
         this.paddlePos.x = Math.floor((this.screen.x - PADDLE_WIDTH) / 2);
@@ -76,19 +57,19 @@ class Game {
         // We check the pointer first because it works on phones, tablets, and any computer with a mouse.
         // The "0" you see in BT.isPointerActive(0) and BT.pointerPos(0) means "the first pointer slot."
         // A phone can track several fingers at once; slot 0 is always the first (or only) one.
-        if (BT.isPointerActive(0)) {
+        if (blit386.BT.isPointerActive(0)) {
             // BT.pointerPos(0) returns a Vector2i: the exact pixel position of the pointer right now.
             // We want the CENTER of the paddle under the pointer, not its left edge.
             // Subtracting half the paddle width shifts it left so it is balanced around the cursor or finger.
-            this.paddlePos.x = BT.pointerPos(0).x - Math.floor(PADDLE_WIDTH / 2);
+            this.paddlePos.x = blit386.BT.pointerPos(0).x - Math.floor(PADDLE_WIDTH / 2);
         } else {
             // No pointer is active - fall back to the arrow keys (or a connected gamepad).
             // BT.isDown() is true for every frame the button is held down, not just the frame it was pressed.
-            if (BT.isDown(BT.BTN_LEFT, 0)) {
+            if (blit386.BT.isDown(blit386.BT.BTN_LEFT, 0)) {
                 this.paddlePos.x -= PADDLE_SPEED;
             }
 
-            if (BT.isDown(BT.BTN_RIGHT, 0)) {
+            if (blit386.BT.isDown(blit386.BT.BTN_RIGHT, 0)) {
                 this.paddlePos.x += PADDLE_SPEED;
             }
         }
@@ -106,20 +87,21 @@ class Game {
         }
 
         // Every SPAWN_EVERY steps, drop a new block at a random spot along the top.
-        if (BT.ticks % SPAWN_EVERY === 0) {
+        if (blit386.BT.ticks % SPAWN_EVERY === 0) {
             const x = Math.floor(Math.random() * (this.screen.x - ITEM_SIZE));
-            this.items.push(new Vector2i(x, -ITEM_SIZE));
+            this.items.push(new blit386.Vector2i(x, -ITEM_SIZE));
         }
 
         // The paddle as a rectangle, used to check for catches.
-        const paddleRect = new Rect2i(this.paddlePos.x, this.paddlePos.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+        const paddleRect = new blit386.Rect2i(this.paddlePos.x, this.paddlePos.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 
         // Move each block down, then decide: caught, missed, or still falling.
-        const stillFalling: Vector2i[] = [];
+        const stillFalling: blit386.Vector2i[] = [];
 
         for (const item of this.items) {
             item.y += ITEM_FALL_SPEED;
-            const itemRect = new Rect2i(item.x, item.y, ITEM_SIZE, ITEM_SIZE);
+
+            const itemRect = new blit386.Rect2i(item.x, item.y, ITEM_SIZE, ITEM_SIZE);
 
             if (paddleRect.isIntersecting(itemRect)) {
                 this.score += 1; // the paddle touched it: caught
@@ -142,51 +124,21 @@ class Game {
 
     render(): void {
         // Paint the background first. This also erases last frame's drawing.
-        BT.clear(COLOR_BACKGROUND);
+        blit386.BT.clear(COLOR_BACKGROUND);
 
         // Draw every falling block.
         for (const item of this.items) {
-            BT.drawRectFill(new Rect2i(item.x, item.y, ITEM_SIZE, ITEM_SIZE), COLOR_ITEM);
+            blit386.BT.drawRectFill(new blit386.Rect2i(item.x, item.y, ITEM_SIZE, ITEM_SIZE), COLOR_ITEM);
         }
 
         // Draw the paddle.
-        BT.drawRectFill(new Rect2i(this.paddlePos.x, this.paddlePos.y, PADDLE_WIDTH, PADDLE_HEIGHT), COLOR_PADDLE);
+        blit386.BT.drawRectFill(new blit386.Rect2i(this.paddlePos.x, this.paddlePos.y, PADDLE_WIDTH, PADDLE_HEIGHT), COLOR_PADDLE);
 
         // Show the score and lives in the top-left corner.
-        BT.systemPrint(new Vector2i(6, 6), COLOR_TEXT, `Score ${this.score}`);
-        BT.systemPrint(new Vector2i(6, 18), COLOR_TEXT, `Lives ${this.lives}`);
+        blit386.BT.systemPrint(new blit386.Vector2i(6, 6), COLOR_TEXT, `Score ${this.score}`);
+        blit386.BT.systemPrint(new blit386.Vector2i(6, 18), COLOR_TEXT, `Lives ${this.lives}`);
     }
-
-    // Optional hardware settings. Uncomment to change the screen size or speed, or to
-    // turn off the BLIT386 splash that plays when you build your game for real.
-    // Full detail: docs/basics.md
-    //
-    // configure() {
-    //     return {
-    //         displaySize: new Vector2i(320, 240),
-    //         targetFPS: 60,
-    //         isSplashEnabled: false,
-    //     };
-    // }
-
-    // Optional hot-reload hook (engine 1.4.0+). The blit386() Vite plugin calls this after a
-    // save that re-runs init() (or after a method-only swap). Use the snapshot to keep score
-    // and other fields when you tweak init(). Leave it commented until you need it.
-    // Full detail: docs/hot-reload.md
-    //
-    // onHotReload(context: { reason: string; snapshot?: Record<string, unknown> }): void {
-    //     // Only restore after a re-init (not after a method-only swap).
-    //     if (context.reason !== 'reinit' || !context.snapshot) {
-    //         return;
-    //     }
-    //     if (typeof context.snapshot.score === 'number') {
-    //         this.score = context.snapshot.score;
-    //     }
-    //     if (typeof context.snapshot.lives === 'number') {
-    //         this.lives = context.snapshot.lives;
-    //     }
-    // }
 }
 
 // Hand the Game class to BLIT386. It builds one game, runs init() once, then update() and render() about 60 times a second.
-bootstrap(Game);
+blit386.bootstrap(Game);
