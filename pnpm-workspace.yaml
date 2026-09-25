@@ -1,0 +1,4 @@
+# wrangler (the Cloudflare deploy CLI) depends on these; same allow-list as the blit386 monorepo.
+allowBuilds:
+  esbuild: true
+  workerd: true

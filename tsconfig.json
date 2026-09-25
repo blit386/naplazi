@@ -6,7 +6,11 @@
     "strict": true,
     "noEmit": true,
     "lib": ["ESNext", "DOM"],
-    "types": []
+    "types": [],
+    "paths": {
+      "blit386": ["../../blit386/packages/blit386/dist/blit386.d.ts", "./node_modules/blit386/dist/blit386.d.ts"]
+    },
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

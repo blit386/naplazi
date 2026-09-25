@@ -139,3 +139,10 @@ Run `npx blit agents sync` after a kit update (`npx blit upgrade`) to refresh th
 ## Your notes
 
 Add project-specific notes for Claude here. This section is yours.
+
+- naplazi is the test bed for blit386 engine work. When `../../blit386/packages/blit386` exists, `vite.config.js`
+  aliases `blit386` to its `src/` for both dev and build, and loads the `blit386()` plugin from its `dist/` (rebuilt on
+  start by the monorepo's `scripts/ensure-engine-built.mjs`). Elsewhere (CI) the npm package is used.
+  `BLIT386_ENGINE=npm` forces the npm package.
+- Engine source edits full-reload the page by design; game code and `public/` assets still hot-swap.
+- `pnpm run deploy` builds and uploads to Cloudflare Pages (project `naplazi`) from this machine.

@@ -14,7 +14,8 @@
     "format": "biome format --write . && prettier --write \"**/*.{md,mdx,mdc,yml,yaml}\"",
     "format:check": "biome format . && prettier --check \"**/*.{md,mdx,mdc,yml,yaml}\"",
     "lint": "biome lint .",
-    "lint:fix": "biome lint --write ."
+    "lint:fix": "biome lint --write .",
+    "deploy": "vite build && wrangler pages deploy dist --project-name=naplazi --branch=main"
   },
   "dependencies": {
     "blit386": "^1.7.0"
@@ -24,7 +25,8 @@
     "@blit386/kit": "^1.7.0",
     "prettier": "^3.9.6",
     "typescript": "^5.9.3",
-    "vite": "^8.0.16"
+    "vite": "^8.0.16",
+    "wrangler": "4.114.0"
   },
   "packageManager": "pnpm@12.4.2+sha512.08adc6613180275c7c9edada39dcf08c9c61ad4e7eaf330a4f3461f102b0f907423454d117f98e72d47fef0616070644d7bffc973a6a57f5090a6d7c368b07c9"
 }
