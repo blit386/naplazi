@@ -11,7 +11,7 @@
       "path": ".claude/hooks/shell-safety.sh",
       "class": "kit-owned",
       "kitVersion": "1.7.0",
-      "sha256": "5a1a008c8827fc80182038b9f260e67f67d745d9cc18f9d2e77700922d236346"
+      "sha256": "c03f2bf137072192f2db3577f08291edd8a142ae52c0b0fc504eb684a9c82e68"
     },
     {
       "path": ".claude/rules/blit-api-names.md",
@@ -377,7 +377,7 @@
       "path": ".cursor/hooks/shell-safety.sh",
       "class": "kit-owned",
       "kitVersion": "1.7.0",
-      "sha256": "5a1a008c8827fc80182038b9f260e67f67d745d9cc18f9d2e77700922d236346"
+      "sha256": "c03f2bf137072192f2db3577f08291edd8a142ae52c0b0fc504eb684a9c82e68"
     },
     {
       "path": ".cursor/mcp.json",
