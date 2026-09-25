@@ -20,7 +20,8 @@
     "preflight": "pnpm run format:check && pnpm run typecheck && pnpm run spellcheck && pnpm run knip && pnpm run build",
     "deploy": "vite build && wrangler pages deploy dist --project-name=naplazi --branch=main",
     "prepare": "husky",
-    "play": "node scripts/play.mjs"
+    "play": "node scripts/play.mjs",
+    "sprites": "node --experimental-strip-types tools/make-sprites.mjs"
   },
   "dependencies": {
     "blit386": "^1.7.0"

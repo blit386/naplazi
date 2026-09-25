@@ -1,6 +1,16 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "project": ["src/**/*.ts"],
+  "ignore": [
+    "src/game/Backpack.ts",
+    "src/game/Haptics.ts",
+    "src/game/Lanes.ts",
+    "src/game/Pause.ts",
+    "src/hud/SignalBar.ts"
+  ],
+  "ignoreIssues": {
+    "src/palette/palette.ts": ["exports", "duplicates"]
+  },
   "ignoreExportsUsedInFile": true,
   "ignoreDependencies": ["@blit386/kit"]
 }

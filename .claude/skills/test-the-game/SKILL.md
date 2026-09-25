@@ -28,19 +28,23 @@ Use this after a change to gameplay, input, or drawing, to reproduce a bug the u
      `vite preview`. If the game's `configure()` sets `isSplashEnabled`, that setting wins over the URL.
    - Add `&backend=software` when the browser has no WebGPU, or to test what players without WebGPU get. `software` is
      the only value it accepts.
-3. Give the canvas keyboard focus without clicking it: run `document.querySelector('canvas').focus()` in the page. A
-   click makes the pointer active, and this game then steers the paddle with the mouse and ignores the keys.
+3. Give the canvas keyboard focus without clicking it: run `document.querySelector('canvas').focus()` in the page. The
+   game opens on its title screen, which waits for a press anywhere. Start it with a real mouse press held for about 100
+   ms (a press that is over within one game step, 1/60 s, is never seen). Once playing, the player steers with the arrow
+   keys or A and D, or with a held mouse button on the left or right half of the screen. Mouse hover does not steer.
 4. Read the state. Run this JavaScript in the page:
 
    ```js
    window.__game.state();
    ```
 
-   It returns plain numbers, for example `{ ticks, score, lives, paddle: { x, y, ... }, items: [...] }`. Read it twice
-   about a second apart: `ticks` should have grown by about 60.
+   It returns plain data, for example
+   `{ ticks, screen, seed, collected, dayProgress, gameTimeMinutes, phase, player: { x, y }, detectorHead: { x, y }, nearestTreasurePx, ... }`.
+   `screen` is `title`, `play` or `results`. Read it twice about a second apart: `ticks` should have grown by about 60,
+   and once playing `dayProgress` climbs from 0 to 1 over two real minutes.
 
-5. Press keys, then read the state again. Keys use `KeyboardEvent.code` names: `KeyA`, `KeyD`, `ArrowLeft`, `Space`.
-   Player 0 uses W, A, S, D and Space out of the box; the starter game also maps the left and right arrow keys. The game
+5. Press keys, then read the state again. Keys use `KeyboardEvent.code` names: `KeyA`, `KeyD`, `ArrowLeft`,
+   `ArrowRight`. Player 0 uses W, A, S, D out of the box; this game also maps the left and right arrow keys. The game
    runs in real time (about 60 steps a second), so read the state after a key press instead of assuming how far
    something moved.
 6. Grab an exact frame when you need to see the picture:
@@ -55,11 +59,11 @@ Use this after a change to gameplay, input, or drawing, to reproduce a bug the u
 
 - `ticks` climbs between two reads.
 - The browser console shows no errors.
-- The numbers you meant to change moved the way you expected (the score went up after a catch, the paddle's `x` went
-  down while `KeyA` was held).
-- The same seed and the same key presses give the same state. Seeded things (where blocks appear, how far they fell by a
-  given tick) match exactly. Things you steered can differ by a step or two, because a key press lands in real time, not
-  on an exact tick.
+- The numbers you meant to change moved the way you expected (`screen` went from `title` to `play` after the press,
+  `player.x` went down while `KeyA` was held, `collected` went up after walking over a buried item).
+- The same seed and the same key presses give the same state. Seeded things (where items are buried, how the day clock
+  advances per tick) match exactly, on WebGPU and on the software renderer alike. Things you steered can differ by a
+  step or two, because a key press lands in real time, not on an exact tick.
 
 ## Using your browser
 
@@ -76,11 +80,11 @@ The steps above need a browser tool that can run JavaScript in the page and pres
 Edge on this computer, focuses the canvas, runs your steps in order, and prints one JSON line per step.
 
 ```sh
-pnpm run play -- --seed 42 wait:1000 state hold:ArrowLeft:500 state shot
+pnpm run play -- --seed 42 wait:800 click:90:160 wait:1500 state hold:ArrowRight:600 state shot
 ```
 
-- Steps: `wait:<ms>`, `press:<key>`, `hold:<key>:<ms>`, `move:<x>:<y>`, `click:<x>:<y>` (game pixels), `state`,
-  `shot[:<file.png>]` (saved under `screenshots/`, ignored by git), `eval:<expression>`.
+- Steps: `wait:<ms>`, `press:<key>`, `hold:<key>:<ms>`, `move:<x>:<y>`, `click:<x>:<y>` (game pixels; holds the button
+  100 ms), `state`, `shot[:<file.png>]` (saved under `screenshots/`, ignored by git), `eval:<expression>`.
 - Options: `--seed <n>`, `--backend software`, `--url <url>` (use a server that is already running), `--headed` (show
   the window). `pnpm run play -- --help` lists them all.
 - The run passed only if the last line is `"errors":[]` and the exit code is 0. Any error the page logs fails it.
@@ -88,14 +92,16 @@ pnpm run play -- --seed 42 wait:1000 state hold:ArrowLeft:500 state shot
 
 ## Notes
 
-- `window.__game` is the starter game's own code in `src/game.*`: look for `window.__game` in `init()`. Add a field to
-  `state()` when you need to check something new, for example `level: this.level`. Keep it plain numbers, strings, and
-  arrays so a browser tool can print it.
+- `window.__game` is set up by `src/playtest.ts`, and the snapshot it returns is `Game.playtestState()` in
+  `src/game.ts`. Add a field there (and to `PlaytestState`) when you need to check something new. Keep it plain numbers,
+  strings, and arrays so a browser tool can print it. Positions in the state are world coordinates, not screen pixels.
 - An older game without `window.__game` still has `window.BT` in a dev build: `BT.ticks`, `BT.activeBackend`, and
   `BT.captureFrame()` (it returns a PNG `Blob`) work straight away. See `use-dev-mode`.
 - Both `window.__game` and `window.BT` exist only while the dev server runs the game. A built game has neither.
-- `?seed=` only helps if the game rolls dice with `BT.random`, not `Math.random()`. See `use-random`.
+- `?seed=` reaches the game's own generator (`src/rng/Rng.ts`) through `readSeedParam()` in `src/playtest.ts`. It only
+  helps if every random roll goes through that generator (or `BT.random`), never `Math.random()`. A restart rolls the
+  next seed from the same generator, so the whole session stays reproducible. See `use-random`.
 - If the browser pane or tab is hidden, the browser slows the page down and `ticks` climbs slowly. Keep it visible while
   testing anything that depends on timing.
-- If nothing happens when you press keys, the canvas has lost focus or the pointer has taken over the paddle. Focus the
-  canvas again with `document.querySelector('canvas').focus()` and keep the mouse off it.
+- If nothing happens when you press keys, the canvas has lost focus, or the game is still on the title screen (check
+  `screen` in the state). Focus the canvas again with `document.querySelector('canvas').focus()`.

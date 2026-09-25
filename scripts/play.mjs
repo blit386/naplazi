@@ -16,7 +16,7 @@ Starts the dev server, opens the game in a real browser, runs the steps in order
 Exits with code 1 if the page logged an error or a step failed.
 
 Options:
-  --seed <n>          Same seed, same game: blocks fall in the same places every run.
+  --seed <n>          Same seed, same beach: the treasures are buried in the same places every run.
   --url <url>         Use a dev server that is already running instead of starting one.
   --backend software  Force the Canvas 2D renderer instead of WebGPU.
   --headed            Show the browser window instead of running it hidden.
@@ -27,7 +27,7 @@ Steps (keys use KeyboardEvent.code names: ArrowLeft, KeyA, Space, Enter, ...):
   press:<key>         Tap a key.
   hold:<key>:<ms>     Hold a key down for <ms> milliseconds.
   move:<x>:<y>        Move the mouse to game pixel (x, y).
-  click:<x>:<y>       Click at game pixel (x, y).
+  click:<x>:<y>       Click at game pixel (x, y), holding the button for 100 ms so the game sees it.
   state               Print window.__game.state() (or BT.ticks if the game has no __game).
   shot[:<file.png>]   Save the current frame, sharp and unscaled by the browser (default: screenshots/tick-<n>.png).
   eval:<expression>   Print the result of a JavaScript expression run in the game page (BT is available).
@@ -36,6 +36,10 @@ Example:
   pnpm run play -- --seed 42 wait:1000 state hold:ArrowLeft:500 state shot`;
 
 const BROWSERS = ['chrome', 'msedge']; // tried in this order; we use what the computer already has
+
+// The game reads the mouse button once per step (1/60 s). A click that is over sooner than that is never seen,
+// so `click` holds the button down for a few steps.
+const CLICK_HOLD_MS = 100;
 
 // npm drops the `--` in `npm run play -- ...`, pnpm passes it along; skip it either way.
 const argv = process.argv.slice(2);
@@ -126,7 +130,9 @@ async function runStep(page, step) {
         case 'click': {
             const point = await toPagePoint(page, toNumber(args[0], 'x'), toNumber(args[1], 'y'));
 
-            await (name === 'move' ? page.mouse.move(point.x, point.y) : page.mouse.click(point.x, point.y));
+            await (name === 'move'
+                ? page.mouse.move(point.x, point.y)
+                : page.mouse.click(point.x, point.y, { delay: CLICK_HOLD_MS }));
             return undefined;
         }
         case 'state':

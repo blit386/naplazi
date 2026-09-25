@@ -3,7 +3,29 @@
   "language": "en",
   "allowCompoundWords": true,
   "dictionaries": ["typescript", "node", "html", "css", "npm", "softwareTerms"],
-  "words": ["biomejs", "blit386", "BLIT386", "commitlint", "llms", "naplazi", "pnpm", "vancura", "Vite", "WASD"],
+  "words": [
+    "ADSR",
+    "biomejs",
+    "blit386",
+    "BLIT386",
+    "buzzy",
+    "commitlint",
+    "Ettinger",
+    "IDAT",
+    "IEND",
+    "IHDR",
+    "indexize",
+    "llms",
+    "misdraw",
+    "naplazi",
+    "pnpm",
+    "reinit",
+    "retuned",
+    "unrotated",
+    "vancura",
+    "Vite",
+    "WASD"
+  ],
   "flagWords": ["cant", "dont", "hte", "teh", "wont"],
   "ignorePaths": [
     "*.map",
@@ -22,5 +44,12 @@
     "docs",
     "AGENTS.md"
   ],
-  "ignoreRegExpList": ["/#[0-9A-Fa-f]{3,8}/", "/0x[0-9A-Fa-f]+/", "/@[a-zA-Z0-9_-]+\\/[a-zA-Z0-9_-]+/"]
+  "ignoreRegExpList": ["/#[0-9A-Fa-f]{3,8}/", "/0x[0-9A-Fa-f]+/", "/@[a-zA-Z0-9_-]+\\/[a-zA-Z0-9_-]+/"],
+  "overrides": [
+    {
+      "filename": "tools/**",
+      "comment": "make-sprites.mjs draws pixel art as rows of letters (ASSSS, AABB): data, not words.",
+      "ignoreRegExpList": ["/\\b[A-Z]{3,}\\b/"]
+    }
+  ]
 }

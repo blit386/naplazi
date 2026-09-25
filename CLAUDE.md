@@ -155,3 +155,52 @@ Add project-specific notes for Claude here. This section is yours.
   run.
 - `BLIT386_ENGINE_DIR=<path to packages/blit386>` points dev and build at another engine checkout (a worktree) instead
   of `../../blit386/packages/blit386`. Typecheck still reads the main checkout's types.
+
+### The game
+
+naplazi is "Beach Detector" (brought over from the July 2026 game jam repo): a portrait 180x320 game. The player
+side-steps left and right across a scrolling beach with a metal detector and follows the beeps - one signal sent through
+four channels: audio, a border pulse, a blinking detector tip, phone vibration - to dig up buried items before a
+two-minute day (06:00 to 22:00 on the watch) runs out. Screens: title, play, results; restart goes straight back to
+play. Full engine gotchas from building it are in `AGENTS.md`, "Your notes".
+
+`src/game.ts` stays thin on purpose: it builds the shared `Rng` and the palette, loads every sprite sheet, constructs
+the systems, wires their events together (the only place two systems ever meet), and drives the screen state machine.
+Everything else is one small file per concern:
+
+- `src/config.ts` - the shared `CONFIG` (screen size, day length, seed, volumes, feedback toggles, phase thresholds). A
+  value only one system needs lives in a small const block at the top of that system's own file (`DETECTOR`, `PLAYER`).
+- `src/sprites.ts` - sprite sheet geometry plus `loadSpriteSheets()` and `drawDigitString()`. Geometry only; colors live
+  in `src/palette/palette.ts`.
+- `src/rng/Rng.ts` - the one seeded PRNG (mulberry32). Never a second `new Rng(...)`, never `Math.random()`. It is
+  deliberately not `BT.random`: the results screen shows this seed, and swapping generators would change every beach.
+- `src/palette/palette.ts` - the 64-slot layout (slots 1-27 the world ramp that the day and night fade touches, 28-33
+  the fixed HUD colors, the rest free) and the phase builder and fader.
+- `src/game/` - the world: `Beach`, `Player`, `Detector`, `Treasures`, `DayClock`, `Signals`, `Pickup`.
+- `src/hud/` - `Counter` and `Watch`, bitmap only, no text anywhere.
+- `src/audio/` - `Sfx` (synthesized tick, chime, alarm) and `Ambience` (the phase-based bed, cross-faded).
+- `src/ui/` - `TitleScreen`, `ResultsScreen`, `HighScore` (`localStorage`, guarded), `Tap` (the shared "was the screen
+  just tapped" helper).
+- `src/playtest.ts` - `?seed=N` and the dev-only `window.__game`. `Game.playtestState()` in `game.ts` is the snapshot;
+  add a field there when a test needs to check something new.
+
+`Backpack`, `Haptics`, `Lanes`, `Pause` (in `src/game/`) and `SignalBar` (in `src/hud/`) are written but not wired into
+`game.ts` yet (find panel, item types, the five-lane grid behind `CONFIG.lane*`). `knip.json` lists them under `ignore`;
+delete each entry when its file gets used.
+
+Working rules for `src/`:
+
+- Every file under `src/` is a teaching artifact: nearly every declaration carries an explanatory comment. Keep that
+  density when editing or adding modules.
+- Anything that runs inside `update()` and can throw (storage, vibration, anything device-dependent) must be guarded:
+  there is no outer catch, and an uncaught throw stops the game loop for good.
+- Never move logic into `render()` or drawing into `update()`. Drive timing from `BT.deltaSeconds`, not from counting
+  `update()` calls.
+- `pnpm run sprites` regenerates `public/sprites/*.png` from `tools/make-sprites.mjs`. That script imports
+  `src/palette/palette.ts` and `src/sprites.ts` directly through Node type stripping, so those two files may only import
+  `blit386` (no relative imports) and must stay erasable TypeScript (no enums or parameter properties). Regenerated PNGs
+  decode to the same pixels but may differ byte-for-byte on another Node/zlib version.
+- The design documents live in `docs/design/` (see its `README.md`); open one only when you need the reasoning behind a
+  decision. Comments citing `TASK-nnn` or "PLAN.md section n" point at `docs/design/original/`. `docs/design/revised/`
+  is a later rethink (lanes, find panel, backpack) whose modules are written but not wired into `game.ts` - the code
+  wins where they disagree.

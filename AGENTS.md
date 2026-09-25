@@ -135,3 +135,108 @@ Run `npx blit agents sync` after a kit update (`npx blit upgrade`) to refresh th
 Everything below the managed end marker is yours. Write down decisions, todos, or project-specific rules here - for
 yourself or for your AI assistant. Kit updates (`npx blit agents sync`) rewrite only the managed part above and never
 touch this section.
+
+### Engine notes from building Beach Detector
+
+Traced by reading the engine source while building the game (blit386 1.4.0). Only the `update()` note has been
+re-checked against 1.7.0; look at the engine before you rely on the others for something new.
+
+#### `update()` runs with no safety net
+
+Each rendered frame the engine runs its `update()` steps (at most 8 catch-up steps), then `render()`, then schedules the
+next `requestAnimationFrame` - all with no `try`/`catch` around any of it. If `update()`, or anything it calls, throws,
+the loop never reaches the next frame: the game freezes on the last drawn frame, with no error overlay and no restart,
+until the page is reloaded.
+
+So anything that runs inside `update()` and calls something not 100% guaranteed never to throw (browser APIs above all:
+storage, vibration, anything device-dependent) must be guarded. This is why a few things in `src/` look extra defensive:
+
+- `src/game/Signals.ts` wraps `navigator.vibrate(...)` in `try`/`catch` - the method can exist and still throw (a
+  cross-origin iframe without permission, some WebViews).
+- `src/game/DayClock.ts` clamps its divisor with `Math.max(1, CONFIG.dayLengthSeconds)`, so a typo of `0` gives "day
+  permanently over" instead of a `NaN` that would reach the watch's digit string, which `drawDigitString()` deliberately
+  throws on.
+- `src/ui/HighScore.ts` wraps every `localStorage` read and write - a full quota or private browsing must degrade to "no
+  persistence", not stop the game.
+
+#### The debug overlay is on by default; this game turns it off
+
+`isOverlayEnabled` defaults to `true`, so a fresh scaffold draws the FPS/backend/palette overlay on top of everything.
+`configure()` returns `isOverlayEnabled: false` because the game draws its own bitmap HUD. With the flag `false` the
+overlay object is never built, so nothing can toggle it back on at runtime: to see it again, change `configure()` (a
+full page reload, since it is a hardware setting).
+
+#### Palette value changes: never call `BT.spritesRefresh()`
+
+`BT.paletteSet()` prints "Active palette structure changed. Call BT.spritesRefresh()" whenever at least one sprite sheet
+is loaded, whether or not the palette layout really changed. This game calls `paletteSet()` in `init()` (no sheets yet,
+so no warning) and again in `restart()` (sheets loaded, so the warning prints on every restart). Ignore it: the palette
+layout - which slot means what - never changes here, only slot values do (`buildPalette()`, `startPhaseTransition()`,
+`BT.paletteFadeRange`). `spritesRefresh()` is for a changed layout, and after a value-only change it can drop a sheet
+from the engine's registry. `src/palette/palette.ts` and `src/sprites.ts` carry the same warning in their headers.
+
+#### Menu taps and pointer input
+
+`BT.isPointerActive(slot)` is not "the button is down". For the mouse (slot 0) it turns `true` on every plain mouse move
+over the canvas and only clears when the pointer leaves, so it reads as hover. The reliable signals are:
+
+- `BT.isDown(BT.BTN_POINTER_A, slot)` - held: the left mouse button (slot 0) or a touch or pen contact (slots 1-3).
+  `Player.ts` steers with this.
+- `BT.isPressed(BT.BTN_POINTER_A, slot)` - the press edge, true only on the one `update()` tick the pointer goes from up
+  to down. `src/ui/Tap.ts` checks all four slots with it, which is what makes one function work for a phone tap and a
+  desktop click.
+
+A press that starts and ends between two `update()` ticks (under 1/60 s) is never seen. The `click` step of
+`pnpm run play` therefore holds the button for 100 ms.
+
+#### Keyboard defaults, and `BT.inputMap` replaces
+
+The engine's built-in keyboard map gives player 0 the WASD keys and player 1 the arrow keys. This game has one player,
+so `init()` calls:
+
+```ts
+BT.inputMap(0, BT.BTN_LEFT, 'KeyA', 'ArrowLeft');
+BT.inputMap(0, BT.BTN_RIGHT, 'KeyD', 'ArrowRight');
+```
+
+Both calls name the default key and the arrow key together on purpose: `BT.inputMap` sets a button's whole key list, it
+does not append to it. A call naming only `'ArrowLeft'` would silently un-map `KeyA`. Safe to run on every `init()` (hot
+reload re-runs it): it always sets the same two lists.
+
+#### Audio unlock is not synchronous with the gesture
+
+`BT.isAudioUnlocked` does not turn `true` inside the same `pointerdown` or `keydown` handler that starts the unlock: it
+flips only after the browser's `audioContext.resume()` settles, at least a microtask later. `BT.soundPlay` in that gap
+is silently dropped and, unlike `BT.musicPlay`, not remembered. The one-shot sounds never hit this, because nothing
+plays on the exact frame a screen transition is detected. The looping ambience does: `game.ts` sets
+`ambiencePendingStart` on the tap frame and starts the bed on the first later `'play'` frame where `BT.isAudioUnlocked`
+reads `true` (about two frames in practice). If a new system must play a sound tied to a first interaction, copy that
+"check every frame until unlocked" pattern.
+
+#### `AudioClip.synth` is capped at 60 seconds
+
+`SynthParams.duration` throws above 60 s. Every clip here is far shorter (the longest ambience loop is 6 s), and
+`Ambience.ts` loops a short clip with `BT.soundPlay({ loop: true })` instead. A background bed longer than a minute
+would have to be a sound file in `public/`.
+
+#### Input listeners live on the `<canvas>`
+
+The pointer and keyboard subsystems (and the audio-unlock listener) attach to the canvas element, not `window` or
+`document`. Synthetic DOM events dispatched anywhere else are never seen; dispatch them on `#blit386-canvas`. (Only the
+tab-`blur` handler is on `window`.) `pnpm run play` drives real mouse and keyboard input through the browser, so it does
+not hit this.
+
+#### Hot reload and modules outside `src/game.ts`
+
+`docs/hot-reload.md` only covers the game class. The `blit386()` plugin injects its accept handler into exactly one
+module: the one containing `bootstrap(` (`src/game.ts`). Editing any module `game.ts` imports bubbles up to that
+handler, and the engine then decides between a full re-init and a methods-only swap by string-diffing the class source
+of `game.ts` alone. So:
+
+- Editing only the body of a function or class in a helper module (say the math in `Rng.next()`) leaves `game.ts`'s text
+  unchanged, gets a methods-only swap, and does not re-run `init()`. Objects already stored on `this` (`this.rng`,
+  `this.beach`, ...) keep running the old code.
+- Code called fresh every frame from `update()` or `render()` (a free function imported from a helper) does pick the
+  edit up immediately, because ES module bindings are live.
+- To force a re-init after changing a helper module's internals: also touch `game.ts`'s `init()`, constructor or a field
+  initializer in the same save (even whitespace works), or reload the page.
