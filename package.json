@@ -1,6 +1,12 @@
 {
   "name": "naplazi",
   "version": "0.1.0",
+  "description": "Beach Detector: a portrait pixel-art treasure-hunting game built with BLIT386.",
+  "license": "ISC",
+  "author": "Václav Vančura (https://github.com/vancura)",
+  "contributors": [
+    "Jan Černý (https://github.com/chemix)"
+  ],
   "private": true,
   "type": "module",
   "engines": {

@@ -105,7 +105,10 @@ async function toPagePoint(page, x, y) {
             const rect = document.querySelector('canvas').getBoundingClientRect();
             const size = window.BT.displaySize;
 
-            return { x: rect.left + ((gx + 0.5) * rect.width) / size.x, y: rect.top + ((gy + 0.5) * rect.height) / size.y };
+            return {
+                x: rect.left + ((gx + 0.5) * rect.width) / size.x,
+                y: rect.top + ((gy + 0.5) * rect.height) / size.y,
+            };
         },
         [x, y],
     );

@@ -115,3 +115,8 @@ the usual suspects: blank screens, "command not found," forgotten `await`, and m
   for.
 - [blit386.dev/llms.txt](https://blit386.dev/llms.txt) - the whole site's contents as one plain text file, handy for
   skimming or pasting into a chat.
+
+## License
+
+ISC - see `LICENSE`. Made by Václav Vančura ([@vancura](https://github.com/vancura)) and Jan Černý
+([@chemix](https://github.com/chemix)).
