@@ -53,7 +53,7 @@ things to try:
 - `src/palette/palette.ts` - every color in the game as a named palette slot, three lighting phases (morning, noon,
   evening) worth. Change a color here and everything drawn with that slot recolors.
 - `public/sprites/*.png` - the pixel art itself. Edit a PNG directly, or regenerate the whole set with
-  `pnpm run sprites` (see `tools/make-sprites.mjs`); either way, the picture updates in the running game without a page
+  `pnpm run sprites` (see `tools/make-sprites.md`); either way, the picture updates in the running game without a page
   reload.
 
 More about hot reload: `docs/hot-reload.md`.

@@ -1,6 +1,8 @@
 // Generates every PNG under public/sprites/ from the SAME color and layout
 // definitions the game itself uses (src/palette/palette.ts, src/sprites.ts),
-// so the art can never drift out of sync with the palette. Run it with:
+// so the art can never drift out of sync with the palette. How the script
+// works, and how the game loads what it writes, is written up in
+// tools/make-sprites.md. Run it with:
 //
 //   pnpm sprites
 //
