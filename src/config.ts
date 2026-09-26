@@ -82,14 +82,6 @@ export const CONFIG = {
     phaseNightAt: 0.85,
 
     // --- Randomness ---------------------------------------------------------
-    // The starting seed for the game's one shared random number generator
-    // (src/rng/Rng.ts). Every buried item and every scrap of decoration traces
-    // back to this single number, so two runs with the same seed always place
-    // things identically. Change it to get a completely different beach; it is
-    // also shown on the results screen so a good (or a confusing) run can be
-    // found again later.
-    seed: 1337,
-
     // Whether pressing "restart" rolls a brand-new random seed (true) or
     // replays the exact same beach again (false). Handy to set false
     // temporarily while debugging a specific layout.

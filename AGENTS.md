@@ -233,8 +233,8 @@ module: the one containing `bootstrap(` (`src/game.ts`). Editing any module `gam
 handler, and the engine then decides between a full re-init and a methods-only swap by string-diffing the class source
 of `game.ts` alone. So:
 
-- Editing only the body of a function or class in a helper module (say the math in `Rng.next()`) leaves `game.ts`'s text
-  unchanged, gets a methods-only swap, and does not re-run `init()`. Objects already stored on `this` (`this.rng`,
+- Editing only the body of a function or class in a helper module (say the math in `Beach.ts`) leaves `game.ts`'s text
+  unchanged, gets a methods-only swap, and does not re-run `init()`. Objects already stored on `this` (`this.beach`,
   `this.beach`, ...) keep running the old code.
 - Code called fresh every frame from `update()` or `render()` (a free function imported from a helper) does pick the
   edit up immediately, because ES module bindings are live.

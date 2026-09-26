@@ -80,7 +80,7 @@
 //   SUBTRACTING WORLD_DEPTH from its worldY (never resetting to exactly 0),
 //   so a fast scroll speed does not bunch every recycled object at the same
 //   depth. Its worldX (and any other per-object random attribute) is
-//   re-rolled from the shared Rng at the same time, so the recycled object
+//   re-rolled from BT.random at the same time, so the recycled object
 //   reads as a brand new one - see spawnDecorations()/update() below.
 // ============================================================================
 
@@ -99,7 +99,6 @@ import {
     SKY_UPPER,
     SKY_ZENITH,
 } from '../palette/palette';
-import type { Rng } from '../rng/Rng';
 import { cellRect, DECORATIONS_SHEET, FOOTPRINT_SHEET } from '../sprites';
 
 // Everything only this file cares about. Tweak freely; nothing outside this
@@ -311,10 +310,6 @@ function drawBands(bands: readonly Band[]): void {
 // living in their own file, src/game/Treasures.ts, but follow this exact
 // same fixed-pool, world-space shape.
 export class Beach {
-    // The shared random number generator (see src/rng/Rng.ts) - passed in,
-    // never created here, so CONFIG.seed keeps describing the whole run.
-    private readonly rng: Rng;
-
     // The loaded, palette-indexed decoration sheet (see src/sprites.ts).
     // Passed in from src/game.ts's init(), which is the only place sprite
     // sheets are loaded.
@@ -346,8 +341,7 @@ export class Beach {
     // used at least once.
     private nextFootprintSlot: number;
 
-    constructor(rng: Rng, decorationsSheet: SpriteSheet, footprintSheet: SpriteSheet) {
-        this.rng = rng;
+    constructor(decorationsSheet: SpriteSheet, footprintSheet: SpriteSheet) {
         this.decorationsSheet = decorationsSheet;
         this.footprintSheet = footprintSheet;
         this.decorations = this.spawnDecorations();
@@ -355,8 +349,8 @@ export class Beach {
         this.nextFootprintSlot = 0;
     }
 
-    // Rebuilds the decoration pool from scratch, using whatever the shared
-    // Rng's current state is, and clears every footprint. TASK-014 calls
+    // Rebuilds the decoration pool from scratch, using whatever BT.random's
+    // current state is, and clears every footprint. TASK-014 calls
     // this (alongside every other system's reset()) to put the beach back to
     // its starting shape without reloading the page - TODO.md TASK-018's own
     // completion checklist requires a restart to leave no footprint hanging
@@ -404,8 +398,8 @@ export class Beach {
                 // Subtract, don't reset to 0 - see "Recycling" in the
                 // coordinate contract above for why that matters.
                 decoration.worldY -= WORLD_DEPTH;
-                decoration.worldX = this.rng.next() * CONFIG.logicalWidth;
-                decoration.kind = this.rng.nextInt(0, DECORATION_KIND_COUNT);
+                decoration.worldX = BT.random.float(0, CONFIG.logicalWidth);
+                decoration.kind = BT.random.int(0, DECORATION_KIND_COUNT);
             }
         }
 
@@ -487,16 +481,15 @@ export class Beach {
     // Builds BEACH.decorationCount decoration pieces, scattered across the
     // FULL depth range (not all starting at worldY=0) so the beach looks
     // populated from the very first frame instead of needing a few seconds
-    // to scroll decoration into view. Every position and kind comes from the
-    // shared Rng, so the exact same seed always produces the exact same
-    // layout (see docs/basics.md-style determinism note in Rng.ts).
+    // to scroll decoration into view. Every position and kind comes from
+    // BT.random, so the exact same seed always produces the exact same layout.
     private spawnDecorations(): Decoration[] {
         const decorations: Decoration[] = [];
         for (let i = 0; i < BEACH.decorationCount; i += 1) {
             decorations.push({
-                worldX: this.rng.next() * CONFIG.logicalWidth,
-                worldY: this.rng.next() * WORLD_DEPTH,
-                kind: this.rng.nextInt(0, DECORATION_KIND_COUNT),
+                worldX: BT.random.float(0, CONFIG.logicalWidth),
+                worldY: BT.random.float(0, WORLD_DEPTH),
+                kind: BT.random.int(0, DECORATION_KIND_COUNT),
             });
         }
         return decorations;

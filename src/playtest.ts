@@ -1,9 +1,8 @@
 // Play-test hooks: what lets a test, or an AI agent driving a browser, read the game instead of guessing from pixels.
 //
-// Two things live here, both for `pnpm run play` and the `test-the-game` skill:
-//   - `?seed=1234` in the page address picks the beach, so a bug or a test replays the same layout every run.
-//   - In a dev build only, `window.__game.state()` returns a plain-data snapshot and `window.__game.frame()` the next
-//     frame as a PNG data URL. A shipped game (`pnpm run build`) never has `window.__game`.
+// For `pnpm run play` and the `test-the-game` skill: in a dev build only, `window.__game.state()` returns a
+// plain-data snapshot and `window.__game.frame()` the next frame as a PNG data URL. A shipped game
+// (`pnpm run build`) never has `window.__game`. `?seed=` is the engine's; it seeds BT.random before init().
 
 import { BT } from 'blit386';
 import type { DayPhase } from './palette/palette';
@@ -31,25 +30,6 @@ declare global {
             frame(): Promise<string>; // the next frame as a PNG data URL, sharp and unscaled by the browser
         };
     }
-}
-
-// Read `?seed=1234` from the page address. No seed, or one that is not a whole number, means "use CONFIG.seed".
-export function readSeedParam(): number | null {
-    const raw = new URLSearchParams(window.location.search).get('seed');
-
-    if (raw === null) {
-        return null;
-    }
-
-    const seed = Number(raw);
-
-    if (!Number.isSafeInteger(seed)) {
-        console.warn(`[naplazi] Ignoring ?seed=${raw}: it must be a whole number.`);
-
-        return null;
-    }
-
-    return seed;
 }
 
 // Turn a PNG blob into a data URL string, which a browser tool can read back out of the page.
