@@ -156,8 +156,7 @@ class Game {
     }
 
     update(): void {
-        // Exactly one branch runs per call. The title and results branches return right after a tap, so
-        // the world never processes the same tap as movement input on the frame the screen switches.
+        // The title and results branches return right after a tap, so the same tap is never also read as movement.
         if (this.screenState === 'title') {
             if (this.titleScreen.update(BT.deltaSeconds)) {
                 this.screenState = 'play';

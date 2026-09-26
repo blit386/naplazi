@@ -9,10 +9,8 @@ import type { DayPhase } from '../palette/palette';
 
 const DAY_CLOCK = {
     /**
-     * Cap on what one update() may add. Defense in depth: this engine's BT.deltaSeconds is a fixed
-     * 1 / targetFPS, and its catch-up burst after a hidden tab is capped at 8 calls, so no single call
-     * can be huge today. A future engine or host that passes a measured delta would hit this clamp
-     * instead of skipping the day forward by minutes.
+     * Cap on what one update() may add. The engine passes a fixed 1 / targetFPS today, so this only
+     * matters if a host ever passes a measured delta; it keeps a stalled tab from skipping the day forward.
      */
     maxDeltaSecondsPerUpdate: 0.25,
 } as const;

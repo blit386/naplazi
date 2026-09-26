@@ -27,9 +27,9 @@ export const DETECTOR = {
     /** How far the "just beeped" ring reaches beyond the tip sprite at full intensity. Signals.ts owns the decay. */
     blinkHighlightMaxPaddingPx: 3,
 
-    /** Beeping starts inside this ring. */
+    /** Inside this ring the interval ramps from slow to fast; between it and silenceThresholdPx it holds at slow. */
     detectRadiusPx: 64,
-    /** No beep at all beyond this. Also Treasures' search window. */
+    /** Beeping starts here; silence beyond it. Also Treasures' search window. */
     silenceThresholdPx: 80,
     /** Tick interval right on top of an item. */
     beepIntervalFastMs: 90,

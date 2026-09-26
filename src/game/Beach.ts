@@ -5,7 +5,8 @@
  * worldX is a screen pixel: there is no horizontal camera, so `screenX = Math.floor(worldX)`.
  *
  * worldY is a top-down ground-plane distance from the horizon, on the same scale as worldX, from 0
- * (just spawned at the horizon) to WORLD_DEPTH (at the player's feet, about to be recycled). Because
+ * (just spawned at the horizon) to WORLD_DEPTH (the recycling boundary at the bottom of the screen; the
+ * player stands at PLAYER_WORLD_Y, 0.88 of the way down). Because
  * both axes share one scale, `Math.hypot(dx, dy)` between two world points is a real ground distance,
  * and the DETECTOR.*Px radii compare against it directly.
  *
@@ -48,7 +49,7 @@ const BEACH = {
      */
     scrollSpeed: 40,
 
-    /** Depth of the world axis, horizon to feet. Close to logicalWidth so Euclidean distances stay undistorted. */
+    /** Depth of the world axis, horizon to recycling boundary. Close to logicalWidth so distances stay undistorted. */
     worldDepth: 260,
 
     /** Exponent of the depth -> screenY curve. 1 is linear; 2-3 reads as ground-level perspective. */

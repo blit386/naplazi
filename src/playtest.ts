@@ -12,7 +12,7 @@ export interface PlaytestState {
     ticks: number;
     /** 'title' | 'play' | 'results'. */
     screen: string;
-    /** Seed of the beach on screen right now; a restart rolls a new one. */
+    /** Seed of the beach on screen right now; a restart rolls a new one only when CONFIG.reseedOnRestart is true. */
     seed: number;
     collected: number;
     highScore: number;
