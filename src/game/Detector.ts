@@ -1,8 +1,7 @@
-// The detector: a rod drawn as lines, swung left/right by the same input
-// that steps the player, with a small non-rotating sprite at the tip. The
-// tip's world position (the "detector head") is what TASK-010's Treasures.ts
-// and TASK-011's Sfx.ts measure distance to buried items from - see Beach.ts's
-// coordinate system contract for what "world position" means here.
+/**
+ * The detector rod: a line from the player to a non-rotating tip sprite, swung by the same input that
+ * steps the player. The tip's world position is what Treasures.ts measures distance from.
+ */
 
 import { BT, Rect2i, type SpriteSheet, Vector2i } from 'blit386';
 import { CONFIG } from '../config';
@@ -11,78 +10,49 @@ import { cellRect, DETECTOR_HEAD_SHEET } from '../sprites';
 import { depthToScreenY, PLAYER_WORLD_Y } from './Beach';
 import type { InputDirection } from './Player';
 
-// Everything about the detector rod and its beep. Named DETECTOR to match the
-// representative CONFIG block in PLAN.md section 5, which this follows
-// field-for-field. Exported (unlike Player.ts's PLAYER or Beach.ts's BEACH)
-// because PLAN.md section 5 deliberately keeps every detector- and
-// beep-tuning number - rod geometry AND collection AND beep timing - in this
-// ONE block, so Treasures.ts (TASK-010, collectRadiusPx) and Sfx.ts
-// (TASK-011, detectRadiusPx/silenceThresholdPx/beepInterval*Ms/
-// beepCurvePower) read the exact same numbers from here instead of each
-// keeping its own possibly-drifting copy.
+/**
+ * Every detector and beep tuning number in one place. Exported because Treasures.ts (collectRadiusPx,
+ * silenceThresholdPx) and Sfx.ts (the beep fields) read from here instead of keeping their own copies.
+ */
 export const DETECTOR = {
-    // How far the head reaches from the player, in world units (the same
-    // scale as worldX and screenX - see Beach.ts's coordinate contract).
+    /** Rod length, in world units. */
     rodLengthPx: 46,
-    // How far left/right the rod can swing from pointing straight ahead.
+    /** Maximum swing from straight ahead. */
     maxAngleDeg: 70,
-    // How fast the rod swings TOWARD held input, in degrees per second.
-    // Multiplied by deltaSeconds every frame, never by a frame count - see
-    // CLAUDE.md's note that update() can run more or less than once per
-    // rendered frame.
+    /** Degrees per second toward held input. */
     turnSpeedDegPerSec: 140,
-    // How fast the rod eases back to centre when nothing is held.
+    /** Degrees per second back to centre when nothing is held. */
     returnSpeedDegPerSec: 90,
 
-    // TASK-016: how far beyond the tip sprite's own edge the "just beeped" highlight ring reaches at
-    // full intensity (tipBlinkIntensity === 1, see render() below). Shrinks toward the sprite's own
-    // edge as intensity fades toward 0 - the decay timer that drives that fade lives in
-    // src/game/Signals.ts, not here; this file only knows how to draw one already-decided 0..1 number.
+    /** How far the "just beeped" ring reaches beyond the tip sprite at full intensity. Signals.ts owns the decay. */
     blinkHighlightMaxPaddingPx: 3,
 
-    // --- Read by other files only; nothing in THIS file reads them itself.
-    // Listed here anyway (rather than split off to wherever each is read) because PLAN.md's
-    // representative DETECTOR block lists them alongside the fields above -
-    // keeping the whole beep-tuning surface in one place. ---
-    detectRadiusPx: 64, // TASK-010/011: beeping starts inside this ring - read by Sfx.ts
-    silenceThresholdPx: 80, // TASK-011: no beep at all beyond this - read by Sfx.ts and Treasures.ts
-    beepIntervalFastMs: 90, // TASK-011: tick interval right on top of an item - read by Sfx.ts
-    beepIntervalSlowMs: 700, // TASK-011: tick interval at the very edge of the ring - read by Sfx.ts
-    beepCurvePower: 2, // TASK-011: 1 = linear beep ramp, 2 = urgent near the target - read by Sfx.ts
-    collectRadiusPx: 8, // TASK-010: how close the collector must be to dig something up - read by Treasures.ts
+    /** Beeping starts inside this ring. */
+    detectRadiusPx: 64,
+    /** No beep at all beyond this. Also Treasures' search window. */
+    silenceThresholdPx: 80,
+    /** Tick interval right on top of an item. */
+    beepIntervalFastMs: 90,
+    /** Tick interval at the edge of the ring. */
+    beepIntervalSlowMs: 700,
+    /** 1 = linear ramp; 2 = most of the speed-up in the last few pixels. */
+    beepCurvePower: 2,
+    /** How close the collector must get to dig an item up. */
+    collectRadiusPx: 8,
 } as const;
 
-// Which point does the digging, once TASK-010 exists: the detector head, or
-// the player's own body. See PLAN.md section 4.6. `head` is the recommended
-// default - aiming the rod is supposed to matter for collecting, not just
-// for the beep.
+/** Which point digs: the detector head (so aiming matters) or the player's body. */
 export const COLLECTION_MODE: 'head' | 'body' = 'head';
 
-// The detector head's maximum possible horizontal DISTANCE FROM THE PLAYER'S
-// OWN worldX, in pixels, counting the full visible extent of the head sprite
-// (not just its centre point). Reached when the rod is swung all the way to
-// maxAngleDeg (sin() is largest at the edge of the rod's range) plus the
-// sprite's own half-width, since the sprite is centred on the head point and
-// its far edge sticks out that much further. Math.ceil rounds outward (never
-// under-covers), so a caller sizing a safety margin off this number is
-// always safe, never off by a fraction of a pixel.
-//
-// Exported so Player.ts can size its playable band's margin FROM THIS EXACT
-// NUMBER, by computation - see PLAYER.bandMarginPx in Player.ts - instead of
-// a hand-copied constant that could silently drift out of sync with these
-// numbers. headWorldX below adds no direction-dependent offset of its own,
-// so this reach is exactly symmetric left and right: one number safely
-// covers both edges of the band.
+/**
+ * Worst-case horizontal distance of the head sprite's far edge from the player's worldX: full swing
+ * plus half the sprite width, rounded outward. Player.ts sizes its band margin from this.
+ */
 export const DETECTOR_MAX_HORIZONTAL_REACH_PX = Math.ceil(
     Math.sin((DETECTOR.maxAngleDeg * Math.PI) / 180) * DETECTOR.rodLengthPx + DETECTOR_HEAD_SHEET.cellWidth / 2,
 );
 
-// Moves `current` toward `target` by at most `maxDelta`, clamping exactly
-// onto the target instead of overshooting past it. Used for the rod's angle
-// so it (a) stops exactly at +-maxAngleDeg and (b) eases back to exactly 0
-// without ever oscillating past centre and back - a plain subtract-then-add
-// step (with no clamp) would overshoot by however far the last frame's step
-// was too big, which reads as a visible wobble around the target.
+/** Moves `current` toward `target` by at most `maxDelta`, landing exactly on it instead of oscillating around it. */
 function moveToward(current: number, target: number, maxDelta: number): number {
     const diff = target - current;
     if (Math.abs(diff) <= maxDelta) {
@@ -91,22 +61,13 @@ function moveToward(current: number, target: number, maxDelta: number): number {
     return current + Math.sign(diff) * maxDelta;
 }
 
-// The detector rod: an angle that eases toward held input and back to
-// centre, plus the geometry to turn that angle into a head position.
 export class Detector {
-    // The loaded, palette-indexed detector-head sheet (see src/sprites.ts).
-    // Passed in from src/game.ts's init() - the only place sprite sheets load.
     private readonly headSheet: SpriteSheet;
 
-    // The rod's current angle, in degrees, where 0 points straight ahead -
-    // toward the horizon, away from the player, see headWorldY below -
-    // positive is right, negative is left. A float, changed by a limited
-    // rate every frame - never assigned directly to a target.
+    /** 0 points at the horizon; positive is right. Rate-limited, never assigned a target directly. */
     private angleDeg: number;
 
-    // The player's current worldX, refreshed every update() call (see
-    // update() below) so the rod's base always tracks the player even
-    // mid-step.
+    /** The player's worldX, refreshed every update() so the rod tracks a mid-step player. */
     private baseWorldX: number;
 
     constructor(headSheet: SpriteSheet) {
@@ -115,21 +76,13 @@ export class Detector {
         this.baseWorldX = CONFIG.logicalWidth / 2;
     }
 
-    // Puts the rod back to centre, pointing straight ahead. TASK-014 calls
-    // this (alongside every other system's reset()) to restart a run without
-    // reloading the page. baseWorldX is corrected for real on the very next
-    // update() call regardless (the engine always runs update() before
-    // render() - see docs/basics.md) - reset here only as a defensive
-    // default in case render() ever runs before that.
+    /** Rod back to centre. baseWorldX is corrected on the next update() anyway. */
     reset(): void {
         this.angleDeg = 0;
         this.baseWorldX = CONFIG.logicalWidth / 2;
     }
 
-    // Eases the rod's angle toward the player's held input direction, or
-    // back toward centre when nothing is held. Takes the player's state as
-    // plain values (not a Player reference) so this file stays a pure
-    // angle/geometry system with no dependency on how Player.ts itself works.
+    /** Eases the angle toward held input, or back to centre. Takes plain values so this file has no dependency on Player. */
     update(deltaSeconds: number, playerWorldX: number, inputDirection: InputDirection): void {
         this.baseWorldX = playerWorldX;
 
@@ -142,39 +95,22 @@ export class Detector {
         this.angleDeg = moveToward(this.angleDeg, targetAngleDeg, DETECTOR.turnSpeedDegPerSec * deltaSeconds);
     }
 
-    // Draws the rod as a line from the player's position to the head, then
-    // the head sprite centred on the head point, unrotated (the sprite is
-    // radially symmetric on purpose - see src/sprites.ts). The drawn head
-    // position is EXACTLY the floored projection of (headWorldX, headWorldY)
-    // below - nothing else is added anywhere in this method. That equality
-    // matters: TASK-010's Treasures.ts measures distance from headWorldX/headWorldY
-    // every frame (see src/game.ts's update(), when COLLECTION_MODE is 'head'), so
-    // whatever the player sees the rod pointing at must be the very same
-    // point the game measures against, pixel for pixel.
-    //
-    // `tipBlinkIntensity` (TASK-016) is 0 (no highlight at all) to 1 (the instant of a beep) - a plain
-    // number handed in by src/game.ts, itself read straight from src/game/Signals.ts's
-    // detectorBlinkIntensity getter every frame. This file never imports Signals.ts or reaches into
-    // its decay timer to get that number - it only ever draws whatever 0..1 value it is given, which
-    // is exactly the "Detector receives a value as a parameter" split this task's brief asks for.
+    /**
+     * Rod line, tip sprite centred on the head, then the beep highlight ring. The drawn head is exactly
+     * the floored projection of headWorldX/headWorldY, so what the player sees the rod pointing at is
+     * what the game measures from. `tipBlinkIntensity` is 0..1, handed in from Signals via game.ts.
+     */
     render(tipBlinkIntensity: number): void {
         const base = new Vector2i(Math.floor(this.baseWorldX), Math.floor(depthToScreenY(PLAYER_WORLD_Y)));
         const head = new Vector2i(Math.floor(this.headWorldX), Math.floor(depthToScreenY(this.headWorldY)));
         BT.drawLine(base, head, OBJECT_METAL);
 
-        // Centre the (symmetric) tip sprite on the head point - Math.floor
-        // on each half, per this task's rule about rounding division results.
         const halfWidth = Math.floor(DETECTOR_HEAD_SHEET.cellWidth / 2);
         const halfHeight = Math.floor(DETECTOR_HEAD_SHEET.cellHeight / 2);
         const tipPosition = new Vector2i(head.x - halfWidth, head.y - halfHeight);
         BT.drawSprite(this.headSheet, cellRect(DETECTOR_HEAD_SHEET, 0), tipPosition);
 
-        // The "just beeped" highlight: an outline ring around the tip sprite's own bounds, in
-        // OBJECT_ACCENT (the object ramp's shared "bright sparkle/glint" slot - see
-        // src/palette/palette.ts) rather than a HUD slot, since this ring sits on a WORLD object and
-        // should dim/brighten with the same day/night fade as everything else the detector is made of.
-        // Drawn only while there is anything to show at all - most frames tipBlinkIntensity is 0 and
-        // this whole block is skipped.
+        // OBJECT_ACCENT is a world slot, so the ring dims with the day like the rest of the rod.
         if (tipBlinkIntensity > 0) {
             const padding = Math.max(1, Math.round(tipBlinkIntensity * DETECTOR.blinkHighlightMaxPaddingPx));
             const highlightRect = new Rect2i(
@@ -187,16 +123,7 @@ export class Detector {
         }
     }
 
-    // The detector head's world position - a genuine point in world space
-    // (worldX, worldY), per Beach.ts's coordinate system contract. Rotating
-    // a rod of length rodLengthPx by angleDeg around the player, IN WORLD
-    // SPACE, gives both components: sin() for how far sideways the head has
-    // swung (worldX and screenX share one scale - see Beach.ts), and cos()
-    // for how far the head reaches away from the player TOWARD THE HORIZON
-    // (see headWorldY below). render() projects and draws exactly this point
-    // - the same numbers TASK-010's Treasures.ts measures distance from, always in
-    // agreement with what is drawn, by construction (no separate "drawn"
-    // position exists any more - see render() above).
+    /** The head as a real world point: sin() for the sideways swing, cos() for the reach toward the horizon. */
     get headWorldX(): number {
         const angleRad = (this.angleDeg * Math.PI) / 180;
         return this.baseWorldX + Math.sin(angleRad) * DETECTOR.rodLengthPx;
@@ -204,16 +131,8 @@ export class Detector {
 
     get headWorldY(): number {
         const angleRad = (this.angleDeg * Math.PI) / 180;
-        // Per the coordinate contract, worldY runs from 0 at the horizon to
-        // WORLD_DEPTH at the player's feet - so "the rod reaches toward the
-        // horizon" means SUBTRACTING from the player's own worldY, not
-        // adding to it. With today's numbers PLAYER_WORLD_Y is 228.8 and
-        // rodLengthPx is 46, so the closest the head ever gets to the
-        // horizon is 228.8 - 46 = 182.8 world units - safely above 0 for
-        // every angle, so the head never reaches past the horizon. If a
-        // future CONFIG/DETECTOR change ever pushed that below 0,
-        // depthToScreenY's own clamp01 (see Beach.ts) is the safety net that
-        // keeps the projection on-screen rather than doing anything worse.
+        // worldY shrinks toward the horizon, so the reach is subtracted. With today's numbers the head
+        // never gets below 182.8; clamp01 in depthToScreenY is the safety net if tuning ever changes that.
         return PLAYER_WORLD_Y - Math.cos(angleRad) * DETECTOR.rodLengthPx;
     }
 }
