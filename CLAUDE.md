@@ -186,6 +186,9 @@ machine. Everything else is one small file per concern:
 `game.ts` yet (find panel, item types, the five-lane grid behind `CONFIG.lane*`). `knip.json` lists them under `ignore`;
 delete each entry when its file gets used.
 
+Design docs: `docs/design/game.md` describes the game as it plays today (update it when behavior changes);
+`docs/design/roadmap.md` holds the lane-based redesign that is not built yet, in build order, and the open code cleanup.
+
 Working rules for `src/`:
 
 - Comments are JSDoc (`/** */`) on declarations, short, and only where the code does not already say it: a non-obvious

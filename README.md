@@ -109,7 +109,6 @@ the usual suspects: blank screens, "command not found," forgotten `await`, and m
 - `CLAUDE.md` - the same for Claude Code, including a map of the `src/` folders.
 - `docs/` - nine friendly guides: getting started, the game loop, drawing, input, colors, randomness and world
   generation, sound, hot reload, and fixing problems.
-- `docs/design/` - the game's original design brief and task list, and a later revised plan (mostly in Czech).
 - [blit386.dev](https://blit386.dev) - the full BLIT386 documentation site. If you set up Claude Code or Cursor, it can
   search this site directly - that is what the `.mcp.json` file here (Claude Code) or `.cursor/mcp.json` (Cursor) is
   for.
