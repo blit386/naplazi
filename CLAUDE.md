@@ -179,8 +179,8 @@ Everything else is one small file per concern:
 - `src/audio/` - `Sfx` (synthesized tick, chime, alarm) and `Ambience` (the phase-based bed, cross-faded).
 - `src/ui/` - `TitleScreen`, `ResultsScreen`, `HighScore` (`localStorage`, guarded), `Tap` (the shared "was the screen
   just tapped" helper).
-- `src/playtest.ts` - `?seed=N` and the dev-only `window.__game`. `Game.playtestState()` in `game.ts` is the snapshot;
-  add a field there when a test needs to check something new.
+- `src/playtest.ts` - the dev-only `window.__game`. `?seed=N` is the engine's, applied to `BT.random` before `init()`.
+  `Game.playtestState()` in `game.ts` is the snapshot; add a field there when a test needs to check something new.
 
 `Backpack`, `Haptics`, `Lanes`, `Pause` (in `src/game/`) and `SignalBar` (in `src/hud/`) are written but not wired into
 `game.ts` yet (find panel, item types, the five-lane grid behind `CONFIG.lane*`). `knip.json` lists them under `ignore`;
