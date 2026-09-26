@@ -19,9 +19,11 @@ over the sand. The beach slides down past you from the horizon - slowly near the
 feet, so it reads as a low, over-the-shoulder view rather than a flat top-down scroll. The sky above the horizon changes
 color as the day passes.
 
-You do not turn and you do not walk forward. You **step sideways**: holding the left or right half of the screen (or
-A/D, or the arrow keys) steps you that way, and the same input swings the detector rod that way, up to a limit. Buried
-things drift down toward you; you line up and the detector does the rest.
+You do not turn, and you cannot stop or speed up. The figure **walks forward** on its own. You **change lanes**: a tap
+on the left or right half of the screen, or one press of A/D or the arrow keys, steps one lane. One extra tap during a
+step is remembered, so a quick double tap skips two lanes. A tap past an edge lane does nothing. Holding does nothing
+extra. The rod leans toward the step, then returns to centre. Buried things still drift on their own strip; you line up
+and the detector does the rest.
 
 You have two real minutes, in which the watch runs from 06:00 to 22:00. At 22:00 the watch beeps and the run ends.
 
@@ -49,7 +51,7 @@ Logical resolution 180 x 320, portrait; the device may letterbox it.
 |          . o    ~           |   sand, six color bands, down to the bottom edge:
 |       ~        .            |   decoration and buried items (hidden), scrolling down
 |            [found!]         |   pickup reveal, centred between horizon and player
-|            (player)         |   player row, about y 263
+|            (player)         |   feet at y 276; the sprite stands above that row
 |         \___ o              |   rod = a line, tip = a small non-rotating sprite
 +=============================+   border pulses with the beep
 ```
@@ -58,32 +60,43 @@ Logical resolution 180 x 320, portrait; the device may letterbox it.
 
 ### 4.1 The beach (scrolling strip)
 
-`src/game/Beach.ts`. The world is one vertical strip 260 px deep that scrolls down at 40 px/s. It carries cheap
-decoration (18 pieces: litter, cup rings, dark specks) and footprints; buried items live in `Treasures.ts` on the same
-strip.
+`src/game/Beach.ts`. Decoration and footprints sit at a fixed **walking-seconds** `worldY`. The player advances one unit
+per second, and `depthToScreenY(object, player)` turns the gap into a screen row:
 
-The scroll is not linear: `depthToScreenY()` maps depth to screen Y with exponent 2.2, so rows near the horizon crawl
-and rows near the feet race. Objects are stored in world space and projected each frame; anything that scrolls past the
-bottom is recycled to the top with a fresh random position and kind.
+`u = (object.worldY - player.worldY) / 8` (0 at the feet, 1 at the far sand), then
+`screenY = 276 - (276 - 108) * u ^ (1 / 2.2)`.
 
-The engine has no rotated or scaled sprite draw, so perspective lives only in scroll speed; sprites are the same size at
-every depth.
+Eight seconds from the far sand to the feet. Near the horizon the sand crawls; at the feet it races. Below the feet the
+curve does not apply (a negative `u` is not a real power), so the last 1.5 s of trail maps linearly from y 276 to the
+bottom of the screen. A piece that falls off that trail is recycled to the far sand with a new x and kind. Footprints
+are dropped instead of recycled.
+
+The sand color bands still run from the horizon at y 90. Nothing is drawn in y 90-108 yet; that gap is where the sea
+goes. Sprites stay one size at every depth.
+
+Buried items do not use this axis. They still scroll a 260 px strip at 40 px/s inside `Treasures.ts`, and the detector
+head is still measured there.
 
 ### 4.2 The player
 
-`src/game/Player.ts`. Fixed row at 88 % of the strip depth. Holding a direction takes discrete 14 px side-steps, 0.12 s
-each, repeated for as long as it is held, clamped so the detector head never leaves the screen. A pointer held within 6
-px of the centre line stands still. Every finished step stamps a footprint (a ring buffer of 24) that scrolls away with
-the sand. The figure never rotates.
+`src/game/Player.ts`, on `Lanes.ts`. Five lanes, centres 33, 63, 93, 123, 153. A run starts in lane 2 (x 93). The
+sprite's feet are y 276.
+
+A step takes 0.15 s, linear from the drawn x to the next lane centre. One extra tap during a step is queued, and a
+further tap is ignored until that queue is free. An outward tap from lane 0 or lane 4 is ignored. The keyboard is one
+step per press of left/right or A/D; key-repeat does not step again.
+
+Footprints stamp along the **drawn** x: every 0.32 s of walking, and every 10 px of a lane change, so the trail shows
+the step. The figure never rotates.
 
 ### 4.3 The detector
 
 `src/game/Detector.ts`. The rod is a line from the player to the head, with a small non-rotating coil sprite at the tip.
-It swings toward the held direction at 140 deg/s up to 70 deg, and eases back to centre at 90 deg/s when nothing is
-held. The rod is 46 px long.
+It leans toward the lane step at 140 deg/s up to 70 deg, and eases back to centre at 90 deg/s once the step ends. The
+rod is 46 px, drawn from the top of the figure. The head's measured position is still on the treasure pixel strip, so
+beeping and digging have not moved onto the walking-seconds axis.
 
-The **detector head** is the rod's tip. Its world position is what beeping and collecting measure from, so swinging the
-rod to the correct side is a real action with a real payoff.
+The **detector head** is the rod's tip. Its world position is what beeping and collecting measure from.
 
 ### 4.4 Detection and beeping
 
@@ -179,8 +192,7 @@ The game teaches by inviting the reader to change numbers:
 - **Shared values** go in `CONFIG` in `src/config.ts` - only what more than one system reads.
 - **Local values** go in a small const block at the top of the owning file (`BEACH`, `PLAYER`, `DETECTOR`, `SFX`, ...).
 
-`src/config.ts` also holds lane, sea, and signal-bar fields for the redesign in `roadmap.md`; today only the unwired
-modules read them.
+`src/config.ts` also holds sea and signal-bar fields for the redesign in `roadmap.md`. The lane fields are in use.
 
 ## 6. Module map
 
@@ -198,9 +210,9 @@ src/
 public/sprites/        nine PNG sheets painted by tools/make-sprites.mjs (pnpm run sprites)
 ```
 
-Systems never import each other's events; `game.ts` is the only place two systems meet. `Lanes`, `Backpack`, `Haptics`,
-`Pause` (in `src/game/`) and `SignalBar` (in `src/hud/`) exist for the redesign but are not wired in yet; see
-`roadmap.md`.
+Systems never import each other's events; `game.ts` is the only place two systems meet. `Lanes` is wired through the
+player. `Backpack`, `Haptics`, `Pause` (in `src/game/`) and `SignalBar` (in `src/hud/`) exist for the redesign but are
+not wired in yet; see `roadmap.md`.
 
 ## 7. How it was built
 

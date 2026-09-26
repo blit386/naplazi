@@ -33,18 +33,29 @@ class Game {
      * because TypeScript cannot see that init() always runs before update()/render().
      */
     sprites!: SpriteSheets;
+
     beach!: Beach;
+
     player!: Player;
+
     detector!: Detector;
+
     treasures!: Treasures;
+
     pickup!: Pickup;
+
     /** Built by async create() factories: AudioClip.synth returns a Promise. */
     sfx!: Sfx;
+
     ambience!: Ambience;
+
     /** Needs the constructed Sfx, so it is built right after it. */
     signals!: Signals;
+
     dayClock!: DayClock;
+
     counter!: Counter;
+
     watch!: Watch;
 
     /** The only switch update()/render() dispatch on. */
@@ -68,11 +79,15 @@ class Game {
     configure(): Partial<HardwareSettings> {
         return {
             displaySize: new Vector2i(CONFIG.logicalWidth, CONFIG.logicalHeight),
+
             targetFPS: 60,
+
             // The engine overlay would draw over our bitmap HUD.
             isOverlayEnabled: false,
+
             // Android honors this; iOS Safari ignores it.
             preferredOrientation: 'portrait',
+
             // Touch-drag and arrow keys move the player; without these the page would scroll instead.
             isCapturingPointerScroll: true,
             isCapturingKeyboardScroll: true,
@@ -111,17 +126,21 @@ class Game {
         this.treasures.onCollect(() => {
             this.sfx.playCollectSound();
         });
+
         this.treasures.onCollect((_worldX, _worldY, kind) => {
             this.pickup.spawn(kind);
         });
-        this.player.onStepComplete((worldX, worldY) => {
+
+        this.player.onFootprint((worldX, worldY) => {
             this.beach.stampFootprint(worldX, worldY);
         });
+
         // Color and sound change on the same frame; the ambience crossfade is shorter than the palette fade.
         this.dayClock.onPhaseChange((phase) => {
             startPhaseTransition(phase);
             this.ambience.crossfadeTo(phase);
         });
+
         // Everything that happens at day end happens in this one listener, so nothing can fall out of step.
         this.dayClock.onDayEnd(() => {
             this.sfx.playWatchAlarm();
@@ -131,6 +150,9 @@ class Game {
         });
 
         installPlaytestHooks(() => this.playtestState());
+
+        // Title renders before the first play update, so the rod has to start on the figure.
+        this.detector.update(0, this.player.worldX, 0);
 
         return true;
     }
@@ -150,6 +172,7 @@ class Game {
             phase: this.dayClock.phase,
             dayEnded: this.dayClock.hasEnded,
             player: { x: this.player.worldX, y: this.player.worldY },
+            lane: this.player.lane,
             detectorHead: { x: this.detector.headWorldX, y: this.detector.headWorldY },
             nearestTreasurePx: Number.isFinite(nearest) ? nearest : null,
         };
@@ -162,6 +185,7 @@ class Game {
                 this.screenState = 'play';
                 this.ambiencePendingStart = true; // cannot start on this frame, see the field comment
             }
+
             return;
         }
 
@@ -169,6 +193,7 @@ class Game {
             if (this.resultsScreen.update()) {
                 this.restart();
             }
+
             return;
         }
 
@@ -180,22 +205,25 @@ class Game {
         }
 
         this.dayClock.update(deltaSeconds);
+
         if (this.dayClock.hasEnded) {
             // The onDayEnd listener already switched screens. Stop here so the world freezes on this frame.
             return;
         }
 
-        // Order matters: each system reads what the one before it just produced.
-        this.beach.update(deltaSeconds);
+        // Order matters: the beach projects against the walk clock the player just advanced.
         this.player.update(deltaSeconds);
+        this.beach.update(this.player.worldY);
         this.detector.update(deltaSeconds, this.player.worldX, this.player.inputDirection);
 
         const collectorWorldX = COLLECTION_MODE === 'head' ? this.detector.headWorldX : this.player.worldX;
         const collectorWorldY = COLLECTION_MODE === 'head' ? this.detector.headWorldY : this.player.worldY;
+
         this.treasures.update(deltaSeconds, collectorWorldX, collectorWorldY);
 
         this.sfx.update(deltaSeconds, this.treasures.nearestDistancePx);
         this.signals.update(deltaSeconds);
+
         // Last, so a reveal spawned by treasures.update() this frame gets its first tick before render().
         this.pickup.update(deltaSeconds);
     }
@@ -205,19 +233,22 @@ class Game {
 
         // The world is drawn in every screen state. During title and results its update() never runs,
         // so this redraws the frozen last frame as a backdrop.
-        this.beach.render();
+        this.beach.render(this.player.worldY);
         this.pickup.render(); // under the player, so a reveal can never cover the figure
         this.player.render();
+
         // Signals.update() does not run outside 'play'; pass 0 there so no stale highlight lingers.
         this.detector.render(this.screenState === 'play' ? this.signals.detectorBlinkIntensity : 0);
 
         if (this.screenState === 'title') {
             this.titleScreen.render();
+
             return;
         }
 
         if (this.screenState === 'results') {
             this.resultsScreen.render(this.treasures.collectedCount, BT.random.seedValue ?? 0, this.highScore);
+
             return;
         }
 
@@ -237,6 +268,7 @@ class Game {
         this.beach.reset();
         this.player.reset();
         this.detector.reset();
+        this.detector.update(0, this.player.worldX, 0);
         this.treasures.reset();
         this.pickup.reset();
         this.sfx.reset();

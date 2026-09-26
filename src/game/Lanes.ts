@@ -1,7 +1,4 @@
-/**
- * Pure lane-index <-> screen-x helpers over CONFIG.lane*. Not wired into game.ts yet; Player.ts
- * steps in free pixels instead.
- */
+/** Pure lane-index <-> screen-x helpers over CONFIG.lane*. */
 
 import { CONFIG } from '../config';
 
@@ -22,8 +19,14 @@ export function clampLane(lane: number): number {
 /** The lane containing `x`, or -1 outside the playable range. */
 export function laneFromX(x: number): number {
     const [left, right] = playableRange();
+
     if (x < left || x >= right) {
         return -1;
     }
+
     return Math.floor((x - left) / CONFIG.laneWidth);
+}
+
+if (laneFromX(laneCenterX(0)) !== 0 || laneFromX(laneCenterX(CONFIG.laneCount - 1)) !== CONFIG.laneCount - 1) {
+    throw new Error('Lanes.ts: a lane centre is outside its lane');
 }

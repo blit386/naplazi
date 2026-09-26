@@ -181,10 +181,9 @@ from the engine's registry. `src/palette/palette.ts` and `src/sprites.ts` carry 
 over the canvas and only clears when the pointer leaves, so it reads as hover. The reliable signals are:
 
 - `BT.isDown(BT.BTN_POINTER_A, slot)` - held: the left mouse button (slot 0) or a touch or pen contact (slots 1-3).
-  `Player.ts` steers with this.
 - `BT.isPressed(BT.BTN_POINTER_A, slot)` - the press edge, true only on the one `update()` tick the pointer goes from up
-  to down. `src/ui/Tap.ts` checks all four slots with it, which is what makes one function work for a phone tap and a
-  desktop click.
+  to down. `src/ui/Tap.ts` and `Player.ts` both use it: a screen tap changes one lane, and holding does not keep
+  stepping. Checking all four slots is what makes one function work for a phone tap and a desktop click.
 
 A press that starts and ends between two `update()` ticks (under 1/60 s) is never seen. The `click` step of
 `pnpm run play` therefore holds the button for 100 ms.
