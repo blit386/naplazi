@@ -7,8 +7,8 @@
 // This file never draws anything - buried means buried. TASK-017's Pickup.ts
 // is what shows the player what they found, driven off onCollect() below.
 
+import { BT } from 'blit386';
 import { CONFIG } from '../config';
-import type { Rng } from '../rng/Rng';
 import { ITEMS_SHEET } from '../sprites';
 import { WORLD_DEPTH, WORLD_SCROLL_SPEED_PX_PER_SEC } from './Beach';
 import { DETECTOR } from './Detector';
@@ -83,11 +83,6 @@ export type TreasureCollectListener = (worldX: number, worldY: number, kind: num
 // draws nothing - buried items stay invisible for their entire life in this
 // file (see the header comment above).
 export class Treasures {
-    // The shared random number generator (see src/rng/Rng.ts) - passed in,
-    // never created here, so CONFIG.seed keeps describing the whole run,
-    // buried items included.
-    private readonly rng: Rng;
-
     // A fixed-size pool of buried items, built once and mutated in place
     // every frame (see update()) - never reallocated, so hunting for the
     // nearest item does not allocate anything in the hot path.
@@ -111,8 +106,7 @@ export class Treasures {
     // game state.
     private readonly collectListeners: TreasureCollectListener[] = [];
 
-    constructor(rng: Rng) {
-        this.rng = rng;
+    constructor() {
         this.items = this.spawnItems();
         this._nearestDistancePx = Number.POSITIVE_INFINITY;
         this._collectedCount = 0;
@@ -258,23 +252,23 @@ export class Treasures {
     // double-collected" reasoning above depends on.
     private recycle(item: Treasure): void {
         item.worldY -= WORLD_DEPTH;
-        item.worldX = this.rng.next() * CONFIG.logicalWidth;
-        item.kind = this.rng.nextInt(0, ITEM_KIND_COUNT);
+        item.worldX = BT.random.float(0, CONFIG.logicalWidth);
+        item.kind = BT.random.int(0, ITEM_KIND_COUNT);
     }
 
     // Builds TREASURES.itemCount items, scattered across the FULL depth
     // range (not all starting at worldY=0) so buried treasure is already
     // spread out from the very first frame instead of needing several
-    // seconds to scroll into range. Every position and kind comes from the
-    // shared Rng, so the exact same seed always produces the exact same
+    // seconds to scroll into range. Every position and kind comes from
+    // BT.random, so the exact same seed always produces the exact same
     // buried layout.
     private spawnItems(): Treasure[] {
         const items: Treasure[] = [];
         for (let i = 0; i < TREASURES.itemCount; i += 1) {
             items.push({
-                worldX: this.rng.next() * CONFIG.logicalWidth,
-                worldY: this.rng.next() * WORLD_DEPTH,
-                kind: this.rng.nextInt(0, ITEM_KIND_COUNT),
+                worldX: BT.random.float(0, CONFIG.logicalWidth),
+                worldY: BT.random.float(0, WORLD_DEPTH),
+                kind: BT.random.int(0, ITEM_KIND_COUNT),
             });
         }
         return items;

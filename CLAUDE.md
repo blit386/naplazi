@@ -164,16 +164,14 @@ four channels: audio, a border pulse, a blinking detector tip, phone vibration -
 two-minute day (06:00 to 22:00 on the watch) runs out. Screens: title, play, results; restart goes straight back to
 play. Full engine gotchas from building it are in `AGENTS.md`, "Your notes".
 
-`src/game.ts` stays thin on purpose: it builds the shared `Rng` and the palette, loads every sprite sheet, constructs
-the systems, wires their events together (the only place two systems ever meet), and drives the screen state machine.
+`src/game.ts` stays thin on purpose: it seeds `BT.random`, builds the palette, loads every sprite sheet, constructs the
+systems, wires their events together (the only place two systems ever meet), and drives the screen state machine.
 Everything else is one small file per concern:
 
 - `src/config.ts` - the shared `CONFIG` (screen size, day length, seed, volumes, feedback toggles, phase thresholds). A
   value only one system needs lives in a small const block at the top of that system's own file (`DETECTOR`, `PLAYER`).
 - `src/sprites.ts` - sprite sheet geometry plus `loadSpriteSheets()` and `drawDigitString()`. Geometry only; colors live
   in `src/palette/palette.ts`.
-- `src/rng/Rng.ts` - the one seeded PRNG (mulberry32). Never a second `new Rng(...)`, never `Math.random()`. It is
-  deliberately not `BT.random`: the results screen shows this seed, and swapping generators would change every beach.
 - `src/palette/palette.ts` - the 64-slot layout (slots 1-27 the world ramp that the day and night fade touches, 28-33
   the fixed HUD colors, the rest free) and the phase builder and fader.
 - `src/game/` - the world: `Beach`, `Player`, `Detector`, `Treasures`, `DayClock`, `Signals`, `Pickup`.

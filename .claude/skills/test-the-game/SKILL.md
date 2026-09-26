@@ -98,9 +98,10 @@ pnpm run play -- --seed 42 wait:800 click:90:160 wait:1500 state hold:ArrowRight
 - An older game without `window.__game` still has `window.BT` in a dev build: `BT.ticks`, `BT.activeBackend`, and
   `BT.captureFrame()` (it returns a PNG `Blob`) work straight away. See `use-dev-mode`.
 - Both `window.__game` and `window.BT` exist only while the dev server runs the game. A built game has neither.
-- `?seed=` reaches the game's own generator (`src/rng/Rng.ts`) through `readSeedParam()` in `src/playtest.ts`. It only
-  helps if every random roll goes through that generator (or `BT.random`), never `Math.random()`. A restart rolls the
-  next seed from the same generator, so the whole session stays reproducible. See `use-random`.
+- `?seed=` seeds `BT.random`. The engine applies it before `init()`, and `init()` calls
+  `BT.randomSeed(readSeedParam() ?? CONFIG.seed)` so a missing or invalid `?seed=` still lands on `CONFIG.seed`. Every
+  roll goes through `BT.random`, never `Math.random()`. A restart draws the next seed from that same generator. See
+  `use-random`.
 - If the browser pane or tab is hidden, the browser slows the page down and `ticks` climbs slowly. Keep it visible while
   testing anything that depends on timing.
 - If nothing happens when you press keys, the canvas has lost focus, or the game is still on the title screen (check

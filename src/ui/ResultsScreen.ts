@@ -6,7 +6,7 @@
 //   [magnifying glass] collected count - how many buried items THIS run dug up (Treasures.ts)
 //   [star]              best score      - the highest collected count across every run this browser
 //                                          has ever played, persisted across reloads (src/ui/HighScore.ts)
-//   [die]                seed            - the number that produced this exact beach (src/rng/Rng.ts);
+//   [die]                seed            - the number that produced this exact beach (BT.random.seedValue);
 //                                          two runs sharing this number are guaranteed identical
 //
 // A magnifying glass reads as "what you searched up" (search -> results), a star reads as "your best",
@@ -17,7 +17,7 @@
 //
 // Same "draw, do not own" contract as Counter.ts/Watch.ts: every number this file draws is handed in
 // fresh by src/game.ts's render() call every frame, computed and stored elsewhere entirely
-// (Treasures.collectedCount, Rng.seed, src/ui/HighScore.ts's persisted value). This file owns none of
+// (Treasures.collectedCount, BT.random.seedValue, src/ui/HighScore.ts's persisted value). This file owns none of
 // them, and never imports any of those modules to go find them itself.
 import { BT, Rect2i, type SpriteSheet, Vector2i } from 'blit386';
 import { CONFIG } from '../config';
@@ -120,7 +120,7 @@ export class ResultsScreen {
     }
 
     // Draws the numbers panel and the restart button. Draws only - no state changes. `seed` and
-    // `bestScore` are always non-negative whole numbers by construction (src/rng/Rng.ts's seed, and
+    // `bestScore` are always non-negative whole numbers by construction (BT.random.seedValue, and
     // src/ui/HighScore.ts's validated stored value), so drawDigitString never sees anything it cannot
     // draw (it only knows '0'-'9' and ':' - see src/sprites.ts).
     render(collectedCount: number, seed: number, bestScore: number): void {

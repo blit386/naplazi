@@ -15,7 +15,7 @@
 //
 // Every following task in TODO.md adds one more system - time-of-day colors,
 // feedback channels, the pickup reveal, and so on - each living in its own
-// file under src/ (see the folders next to this one: rng/, palette/, game/,
+// file under src/ (see the folders next to this one: palette/, game/,
 // hud/, audio/, ui/). This file's job stays small on purpose: wire those
 // systems together and hand the result to the engine. Gameplay logic belongs
 // in the other files, not here.
@@ -42,8 +42,7 @@ import { Treasures } from './game/Treasures';
 import { Counter } from './hud/Counter';
 import { Watch } from './hud/Watch';
 import { buildPalette, REFERENCE_PHASE, SKY_ZENITH, startPhaseTransition } from './palette/palette';
-import { installPlaytestHooks, type PlaytestState, readSeedParam } from './playtest';
-import { Rng } from './rng/Rng';
+import { installPlaytestHooks, type PlaytestState } from './playtest';
 import { loadSpriteSheets, type SpriteSheets } from './sprites';
 import { loadHighScore, saveHighScoreIfBetter } from './ui/HighScore';
 import { ResultsScreen } from './ui/ResultsScreen';
@@ -55,16 +54,6 @@ import { TitleScreen } from './ui/TitleScreen';
 type ScreenState = 'title' | 'play' | 'results';
 
 class Game {
-    // The single random number generator for the whole game. Every system
-    // that needs randomness (buried item placement, decoration scatter, ...)
-    // receives THIS instance through its own constructor, instead of
-    // creating a `new Rng(...)` of its own - see TASK-004 in TODO.md. One
-    // shared instance is what makes CONFIG.seed describe an entire run,
-    // reproducibly, from the first placed item to the last. A `?seed=N` in the
-    // page address (src/playtest.ts) wins over CONFIG.seed, so a test can pick
-    // its beach.
-    rng: Rng = new Rng(readSeedParam() ?? CONFIG.seed);
-
     // Every loaded, palette-indexed sprite sheet (see src/sprites.ts). Set
     // once by init() and read by render(); declared with the definite
     // assignment assertion (`!`) because TypeScript cannot see that init()
@@ -81,7 +70,7 @@ class Game {
     detector!: Detector;
 
     // Buried items (TASK-010) - built alongside the world systems above.
-    // Needs only the shared Rng, not a sprite sheet: buried items are never
+    // Draws positions from BT.random, not a sprite sheet: buried items are never
     // drawn by this system (see Treasures.ts's header comment) - TASK-017's
     // Pickup.ts is what eventually shows one.
     treasures!: Treasures;
@@ -111,12 +100,10 @@ class Game {
     signals!: Signals;
 
     // Real time -> game time, phase, pause-on-hidden-tab, end-of-day
-    // (TASK-012). Needs no sprite sheet and no Rng - it is a pure clock, not
-    // a random or drawn system - so, unlike the fields above, it does not
-    // have to wait for anything else in init() and could in principle be a
-    // plain field initializer; kept alongside the other `!`-declared systems
-    // instead purely for consistency, since every other per-run system here
-    // is also reset() alongside it by TASK-014's restart() below.
+    // (TASK-012). Needs no sprite sheet - it is a pure clock - so it could
+    // in principle be a plain field initializer; kept alongside the other
+    // `!`-declared systems instead purely for consistency, since every other
+    // per-run system here is also reset() alongside it by TASK-014's restart().
     dayClock!: DayClock;
 
     // The bitmap HUD (TASK-013): the collected-item count, top-left, and the
@@ -229,21 +216,20 @@ class Game {
         this.sprites = await loadSpriteSheets(palette);
 
         // Build the world systems now that their sprite sheets are ready.
-        // The shared Rng goes to Beach only - Player and Detector are both
-        // deterministic functions of input, so they need no randomness of
-        // their own (see TASK-004's rule: never construct a second Rng).
-        this.beach = new Beach(this.rng, this.sprites.decorations, this.sprites.footprint);
+        // Beach and Treasures both draw from the BT.random seeded above.
+        // Player and Detector are deterministic functions of input.
+        this.beach = new Beach(this.sprites.decorations, this.sprites.footprint);
         this.player = new Player(this.sprites.player);
         this.detector = new Detector(this.sprites.detectorHead);
-        this.treasures = new Treasures(this.rng);
+        this.treasures = new Treasures();
 
         // The pickup reveal (TASK-017) - needs the loaded ITEMS_LARGE_SHEET,
         // so it is built here alongside the other sprite-backed systems
         // rather than as a field initializer.
         this.pickup = new Pickup(this.sprites.itemsLarge);
 
-        // The day clock (TASK-012) - needs neither a sprite sheet nor the
-        // shared Rng, so it could have been a plain field initializer, but
+        // The day clock (TASK-012) - needs no sprite sheet, so it could have
+        // been a plain field initializer, but
         // is built here for the same "every per-run system is constructed
         // in one place" consistency as everything above.
         this.dayClock = new DayClock();
@@ -361,7 +347,7 @@ class Game {
         return {
             ticks: BT.ticks,
             screen: this.screenState,
-            seed: this.rng.seed,
+            seed: BT.random.seedValue ?? 0,
             collected: this.treasures.collectedCount,
             highScore: this.highScore,
             dayProgress: this.dayClock.dayProgress,
@@ -521,7 +507,7 @@ class Game {
         }
 
         if (this.screenState === 'results') {
-            this.resultsScreen.render(this.treasures.collectedCount, this.rng.seed, this.highScore);
+            this.resultsScreen.render(this.treasures.collectedCount, BT.random.seedValue ?? 0, this.highScore);
             return;
         }
 
@@ -544,28 +530,9 @@ class Game {
     // pause-on-hidden-tab for the rest of the page's life). Called from update()'s 'results' branch
     // above, the instant the player taps the restart button - never from render().
     private restart(): void {
-        // Re-seed BEFORE any system rebuilds its pool from the shared Rng - Beach.reset() and
-        // Treasures.reset() below both draw their fresh layout by calling this.rng.next()/nextInt()
-        // internally, so whichever seed is live at the moment THEY run is the seed that decides the
-        // next beach. Order matters here exactly the way it matters in init(): one shared Rng, always
-        // read after it is in the state you want (see src/rng/Rng.ts's own "ONE INSTANCE PER GAME"
-        // header note).
-        if (CONFIG.reseedOnRestart) {
-            // A fresh seed, drawn from THIS SAME shared Rng rather than Math.random() - TODO.md
-            // TASK-004's own completion checklist is explicit that Math.random() must never appear
-            // anywhere in src/, precisely so a run stays fully reproducible end to end. The state this
-            // reads from has already advanced through an entire day's worth of calls (every buried
-            // item placement and every recycle this run made), so the number it produces is, in every
-            // practical sense, "new" - while staying entirely inside this one deterministic generator,
-            // never reaching for an outside source of randomness.
-            const nextSeed = this.rng.nextInt(1, 1_000_000_000);
-            this.rng.reset(nextSeed);
-        } else {
-            // No argument - replay the CURRENT seed's sequence from the top. See Rng.reset()'s own doc
-            // comment: this is what proves CONFIG.reseedOnRestart === false reproduces the exact same
-            // beach, item for item (TODO.md TASK-014's own completion checklist).
-            this.rng.reset();
-        }
+        // Re-seed BEFORE Beach.reset() and Treasures.reset() rebuild their pools. Both draw from
+        // BT.random, so the seed live at that moment is the seed of the next beach.
+        BT.randomSeed(CONFIG.reseedOnRestart ? BT.random.int(1, 1_000_000_000) : (BT.random.seedValue ?? 0));
 
         // Every system that owns per-run state gets ITS OWN reset() call, on the exact same instance
         // constructed back in init() - never a fresh `new` anything. This list is deliberately
@@ -611,25 +578,6 @@ class Game {
 
         this.screenState = 'play';
     }
-
-    // Optional hot-reload hook (engine 1.4.0+). The blit386() Vite plugin
-    // calls this after a save that re-runs init() (a "reinit", see
-    // AGENTS.md), so state that init() would otherwise reset - like the RNG
-    // below, or the score once it exists - can be carried across the edit.
-    // Leave it commented until a system actually needs it.
-    // Full detail: docs/hot-reload.md
-    //
-    // onHotReload(context: { reason: string; snapshot?: Record<string, unknown> }): void {
-    //     // Only restore after a re-init (not after a method-only swap).
-    //     if (context.reason !== 'reinit' || !context.snapshot) {
-    //         return;
-    //     }
-    //     // Example: keep replaying the same beach across an init() edit
-    //     // instead of silently re-rolling it mid-session.
-    //     if (context.snapshot.rng instanceof Rng) {
-    //         this.rng = context.snapshot.rng;
-    //     }
-    // }
 }
 
 // Hand the Game class to BLIT386. It builds one instance, runs init() once,
