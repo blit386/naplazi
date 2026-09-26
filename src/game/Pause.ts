@@ -1,20 +1,19 @@
-// Pause: unified pause mechanism for the game. Used when the tab loses focus
-// and when the find panel is active. Handles both game pause and visual
-// dimming.
+/**
+ * A pause with a reason: the hidden tab, or an open find panel. Not wired into game.ts yet; DayClock
+ * pauses itself on a hidden tab.
+ */
 
 import { BT, Rect2i } from 'blit386';
 import { CONFIG } from '../config';
 import { HUD_PAPER } from '../palette/palette';
 
-// Pause reason
 export type PauseReason = 'visibility' | 'panel';
 
-// The pause state
 export class Pause {
     private _isPaused: boolean = false;
     private _reason: PauseReason | null = null;
 
-    // Set up the visibility change listener
+    /** Not idempotent: every call adds another listener. */
     setupVisibilityListener(): void {
         if (typeof document === 'undefined') return;
 
@@ -29,7 +28,6 @@ export class Pause {
         document.addEventListener('visibilitychange', handler);
     }
 
-    // Pause the game with a reason
     pause(reason: PauseReason): void {
         if (this._isPaused) return;
 
@@ -37,41 +35,37 @@ export class Pause {
         this._reason = reason;
     }
 
-    // Resume the game
+    /** A 'panel' pause must end through reset(); resume() ignores it. */
     resume(): void {
         if (!this._isPaused) return;
-        if (this._reason === 'panel') return; // Panel pause must end explicitly
+        if (this._reason === 'panel') return;
 
         this._isPaused = false;
         this._reason = null;
     }
 
-    // Reset pause state (called on restart)
     reset(): void {
         this._isPaused = false;
         this._reason = null;
     }
 
-    // Check if the game should update (returns false when paused)
     shouldUpdate(): boolean {
         return !this._isPaused;
     }
 
-    // Check if the game should stop audio (returns true when paused due to visibility)
+    /** True only for a visibility pause; a panel pause keeps audio running. */
     shouldStopAudio(): boolean {
         return this._isPaused && this._reason === 'visibility';
     }
 
-    // Render the pause overlay (darkening effect)
+    /** Covers the screen with HUD_PAPER while paused for visibility. */
     render(): void {
         if (!this._isPaused || this._reason === 'panel') return;
 
-        // Draw a semi-transparent dark overlay
         const overlay = new Rect2i(0, 0, CONFIG.logicalWidth, CONFIG.logicalHeight);
         BT.drawRectFill(overlay, HUD_PAPER);
     }
 
-    // Get the current pause reason
     get reason(): PauseReason | null {
         return this._reason;
     }

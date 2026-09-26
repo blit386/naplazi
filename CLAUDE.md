@@ -164,9 +164,9 @@ four channels: audio, a border pulse, a blinking detector tip, phone vibration -
 two-minute day (06:00 to 22:00 on the watch) runs out. Screens: title, play, results; restart goes straight back to
 play. Full engine gotchas from building it are in `AGENTS.md`, "Your notes".
 
-`src/game.ts` stays thin on purpose: it seeds `BT.random`, builds the palette, loads every sprite sheet, constructs the
-systems, wires their events together (the only place two systems ever meet), and drives the screen state machine.
-Everything else is one small file per concern:
+`src/game.ts` stays thin on purpose: it reseeds `BT.random` on restart, builds the palette, loads every sprite sheet,
+constructs the systems, wires their events together (the only place two systems ever meet), and drives the screen state
+machine. Everything else is one small file per concern:
 
 - `src/config.ts` - the shared `CONFIG` (screen size, day length, seed, volumes, feedback toggles, phase thresholds). A
   value only one system needs lives in a small const block at the top of that system's own file (`DETECTOR`, `PLAYER`).
@@ -188,8 +188,9 @@ delete each entry when its file gets used.
 
 Working rules for `src/`:
 
-- Every file under `src/` is a teaching artifact: nearly every declaration carries an explanatory comment. Keep that
-  density when editing or adding modules.
+- Comments are JSDoc (`/** */`) on declarations, short, and only where the code does not already say it: a non-obvious
+  constraint, a tuning rationale, a cross-file contract. Do not narrate what a line does, do not cite design documents
+  or task numbers, and delete a comment the moment it goes stale.
 - Anything that runs inside `update()` and can throw (storage, vibration, anything device-dependent) must be guarded:
   there is no outer catch, and an uncaught throw stops the game loop for good.
 - Never move logic into `render()` or drawing into `update()`. Drive timing from `BT.deltaSeconds`, not from counting
@@ -197,8 +198,7 @@ Working rules for `src/`:
 - `pnpm run sprites` regenerates `public/sprites/*.png` from `tools/make-sprites.mjs`. That script imports
   `src/palette/palette.ts` and `src/sprites.ts` directly through Node type stripping, so those two files may only import
   `blit386` (no relative imports) and must stay erasable TypeScript (no enums or parameter properties). Regenerated PNGs
-  decode to the same pixels but may differ byte-for-byte on another Node/zlib version.
-- The design documents live in `docs/design/` (see its `README.md`); open one only when you need the reasoning behind a
-  decision. Comments citing `TASK-nnn` or "PLAN.md section n" point at `docs/design/original/`. `docs/design/revised/`
-  is a later rethink (lanes, find panel, backpack) whose modules are written but not wired into `game.ts` - the code
-  wins where they disagree.
+  decode to the same pixels but may differ byte-for-byte on another Node/zlib version. How the generator works is
+  written up in `tools/make-sprites.md`.
+- Comments citing "PLAN.md section n" mean section n of `docs/design/game.md`. `TASK-nnn` labels come from the retired
+  jam task list (in git history only). The code in `src/` is the source of truth.
