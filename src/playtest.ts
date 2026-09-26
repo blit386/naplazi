@@ -10,21 +10,35 @@ import type { DayPhase } from './palette/palette';
 /** Plain numbers, strings and null only, so a browser tool can print it as JSON. */
 export interface PlaytestState {
     ticks: number;
+
     /** 'title' | 'play' | 'results'. */
     screen: string;
+
     /** Seed of the beach on screen right now; a restart rolls a new one only when CONFIG.reseedOnRestart is true. */
     seed: number;
+
     collected: number;
+
     highScore: number;
+
     /** 0 at the start of the day, 1 once the watch strikes the end. */
     dayProgress: number;
+
     /** Minutes since midnight, what the watch shows. */
     gameTimeMinutes: number;
+
     phase: DayPhase;
+
     dayEnded: boolean;
-    /** World coordinates (see Beach.ts). */
+
+    /** Drawn x in screen pixels; y is seconds of walking. */
     player: { x: number; y: number };
+
+    /** Lane being stepped to. 0 is the leftmost. */
+    lane: number;
+
     detectorHead: { x: number; y: number };
+
     /** null when nothing is within the detector's search window. */
     nearestTreasurePx: number | null;
 }

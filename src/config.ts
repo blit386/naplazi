@@ -34,7 +34,7 @@ export const CONFIG = {
     /** Restart rolls a fresh seed when true; false replays the same beach, handy when debugging a layout. */
     reseedOnRestart: true,
 
-    /** Five-lane grid. Read only by game/Lanes.ts, which is not wired in yet. */
+    /** Five-lane grid. Centres and clamping live in game/Lanes.ts. */
     laneCount: 5,
     laneWidth: 30,
     laneOriginX: 18,

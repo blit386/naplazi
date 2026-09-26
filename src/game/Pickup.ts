@@ -13,8 +13,7 @@
 import { BT, type SpriteSheet, Vector2i } from 'blit386';
 import { CONFIG } from '../config';
 import { cellRect, ITEM_LARGE_CELL, ITEMS_LARGE_SHEET } from '../sprites';
-import { depthToScreenY, PLAYER_WORLD_Y } from './Beach';
-import { HUD_BAND_HEIGHT_PX } from './Player';
+import { HUD_BAND_HEIGHT_PX, PLAYER_SPRITE_TOP_Y } from './Player';
 
 const PICKUP = {
     /** Seconds a reveal sits still before sliding. Too short flashes past unread; too long stalls a fast player. */
@@ -33,12 +32,16 @@ const PICKUP = {
 /** A pooled slot. Inactive slots are inert and skipped. */
 interface Reveal {
     active: boolean;
+
     /** Indexes ITEMS_LARGE_SHEET. */
     kind: number;
+
     /** The hold row, fixed for this reveal's lifetime. */
     baseY: number;
+
     /** Current row, a float while sliding; floored at the draw call. */
     currentY: number;
+
     /** Decides holding vs sliding, and which busy slot to reuse first. */
     elapsedSeconds: number;
 }
@@ -60,8 +63,11 @@ export class Pickup {
 
     /** Fixed layout, computed once: the screen never resizes after configure(). */
     private readonly centerScreenX: number;
+
     private readonly bandTopY: number;
+
     private readonly bandBottomY: number;
+
     private readonly bandCenterY: number;
 
     /** Fixed pool, mutated in place. */
@@ -72,7 +78,7 @@ export class Pickup {
         this.centerScreenX = Math.floor(CONFIG.logicalWidth / 2) - HALF_ITEM_SIZE;
 
         this.bandTopY = CONFIG.horizonY;
-        this.bandBottomY = Math.floor(depthToScreenY(PLAYER_WORLD_Y));
+        this.bandBottomY = PLAYER_SPRITE_TOP_Y;
         this.bandCenterY = Math.floor((this.bandTopY + this.bandBottomY) / 2);
 
         this.reveals = [];
@@ -110,15 +116,20 @@ export class Pickup {
         let freeIndex = -1;
         let mostFinishedIndex = 0;
         let mostFinishedElapsed = -1;
+
         for (let i = 0; i < this.reveals.length; i += 1) {
             const reveal = this.reveals[i] as Reveal;
+
             if (!reveal.active) {
                 if (freeIndex === -1) {
                     freeIndex = i;
                 }
+
                 continue;
             }
+
             activeCount += 1;
+
             if (reveal.elapsedSeconds > mostFinishedElapsed) {
                 mostFinishedElapsed = reveal.elapsedSeconds;
                 mostFinishedIndex = i;
@@ -147,12 +158,15 @@ export class Pickup {
     update(deltaSeconds: number): void {
         for (let i = 0; i < this.reveals.length; i += 1) {
             const reveal = this.reveals[i] as Reveal;
+
             if (!reveal.active) {
                 continue;
             }
 
             reveal.elapsedSeconds += deltaSeconds;
+
             const slideSeconds = reveal.elapsedSeconds - PICKUP.holdSeconds;
+
             reveal.currentY = slideSeconds <= 0 ? reveal.baseY : reveal.baseY + slideSeconds * PICKUP.exitSpeedPxPerSec;
 
             if (reveal.currentY - HALF_ITEM_SIZE > this.bandBottomY) {
@@ -165,10 +179,13 @@ export class Pickup {
     render(): void {
         for (let i = 0; i < this.reveals.length; i += 1) {
             const reveal = this.reveals[i] as Reveal;
+
             if (!reveal.active) {
                 continue;
             }
+
             const screenY = Math.floor(reveal.currentY) - HALF_ITEM_SIZE;
+
             BT.drawSprite(
                 this.itemsLargeSheet,
                 cellRect(ITEMS_LARGE_SHEET, reveal.kind),
