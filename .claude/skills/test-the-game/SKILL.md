@@ -95,7 +95,8 @@ pnpm run play -- --seed 42 wait:800 click:90:160 wait:1500 state hold:ArrowRight
 
 - `window.__game` is set up by `src/playtest.ts`, and the snapshot it returns is `Game.playtestState()` in
   `src/game.ts`. Add a field there (and to `PlaytestState`) when you need to check something new. Keep it plain numbers,
-  strings, and arrays so a browser tool can print it. Positions in the state are world coordinates, not screen pixels.
+  strings, and arrays so a browser tool can print it. `player.x` is screen pixels, `player.y` is seconds of walking, and
+  `lane` is the lane being stepped to (0 is leftmost). `detectorHead` is on the treasure pixel strip.
 - An older game without `window.__game` still has `window.BT` in a dev build: `BT.ticks`, `BT.activeBackend`, and
   `BT.captureFrame()` (it returns a PNG `Blob`) work straight away. See `use-dev-mode`.
 - Both `window.__game` and `window.BT` exist only while the dev server runs the game. A built game has neither.

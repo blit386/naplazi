@@ -8,7 +8,7 @@ import { BT, bootstrap, type HardwareSettings, Vector2i } from 'blit386';
 import { Ambience } from './audio/Ambience';
 import { Sfx } from './audio/Sfx';
 import { CONFIG } from './config';
-import { Beach } from './game/Beach';
+import { Beach, PLAYER_WORLD_Y } from './game/Beach';
 import { DayClock } from './game/DayClock';
 import { COLLECTION_MODE, Detector } from './game/Detector';
 import { Pickup } from './game/Pickup';
@@ -217,7 +217,7 @@ class Game {
         this.detector.update(deltaSeconds, this.player.worldX, this.player.inputDirection);
 
         const collectorWorldX = COLLECTION_MODE === 'head' ? this.detector.headWorldX : this.player.worldX;
-        const collectorWorldY = COLLECTION_MODE === 'head' ? this.detector.headWorldY : this.player.worldY;
+        const collectorWorldY = COLLECTION_MODE === 'head' ? this.detector.headWorldY : PLAYER_WORLD_Y;
 
         this.treasures.update(deltaSeconds, collectorWorldX, collectorWorldY);
 

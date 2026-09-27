@@ -35,13 +35,10 @@ reading the signal and choosing a lane.
 y 288 down. Horizontally: sea strip x 0-17, then five 30 px lanes (centres 33, 63, 93, 123, 153), then 12 px of sand. A
 run starts in lane 2.
 
-**Walking and the beach.** `worldY` is measured in **seconds of walking**: the player advances one unit per second, so
-the `worldY` gap between a treasure and the player is simply "seconds until it reaches my feet". Projection:
-`u = (object.worldY - player.worldY) / 8` (0 = at the feet, 1 = at the horizon), then
+**Walking and the beach.** The player and the sand already scroll this way; see `game.md`. Treasures do not yet. When
+they do, `worldY` is seconds of walking, and the gap to the player is seconds until the item reaches the feet.
+Projection: `u = (object.worldY - player.worldY) / 8` (0 = at the feet, 1 = at the horizon), then
 `screenY = 276 - (276 - 108) * u ^ (1 / 2.2)`. A treasure takes 8 s from horizon to feet.
-
-**Lane moves.** A move animates over 0.15 s. One extra tap is queued during a move, so a quick double tap skips two
-lanes. A tap outward from an edge lane is ignored. Keyboard: one step per press of left/right or A/D.
 
 **Detector swing.** `angle = 45 deg * sin(2 * pi * t / 1.2 s)`, rod 68 px from a pivot at y 262, so the head reaches
 +-48 px (1.6 lanes) sideways. The head passes any spot twice per cycle: a fresh reading every ~0.6 s.

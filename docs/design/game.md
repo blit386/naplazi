@@ -22,7 +22,7 @@ color as the day passes.
 You do not turn, and you cannot stop or speed up. The figure **walks forward** on its own. You **change lanes**: a tap
 on the left or right half of the screen, or one press of A/D or the arrow keys, steps one lane. One extra tap during a
 step is remembered, so a quick double tap skips two lanes. A tap past an edge lane does nothing. Holding does nothing
-extra. The rod leans toward the step, then returns to centre. Buried things still drift on their own strip; you line up
+extra. The rod leans toward the step, then returns to center. Buried things still drift on their own strip; you line up
 and the detector does the rest.
 
 You have two real minutes, in which the watch runs from 06:00 to 22:00. At 22:00 the watch beeps and the run ends.
@@ -45,7 +45,7 @@ Logical resolution 180 x 320, portrait; the device may letterbox it.
 
 ```
 +-----------------------------+
-| [00]                 [watch]|   top 24 px: HUD band - counter left, watch right; taps here do not steer
+| [00]                 [watch]|   top 24 px: HUD band - counter left, watch right; a tap here still steps a lane
 |                             |   sky, five color bands (color = time of day)
 |- - - - - - - - - - - - - - -|   horizon, y 90
 |          . o    ~           |   sand, six color bands, down to the bottom edge:
@@ -79,10 +79,10 @@ head is still measured there.
 
 ### 4.2 The player
 
-`src/game/Player.ts`, on `Lanes.ts`. Five lanes, centres 33, 63, 93, 123, 153. A run starts in lane 2 (x 93). The
+`src/game/Player.ts`, on `Lanes.ts`. Five lanes, centers 33, 63, 93, 123, 153. A run starts in lane 2 (x 93). The
 sprite's feet are y 276.
 
-A step takes 0.15 s, linear from the drawn x to the next lane centre. One extra tap during a step is queued, and a
+A step takes 0.15 s, linear from the drawn x to the next lane center. One extra tap during a step is queued, and a
 further tap is ignored until that queue is free. An outward tap from lane 0 or lane 4 is ignored. The keyboard is one
 step per press of left/right or A/D; key-repeat does not step again.
 
@@ -92,7 +92,7 @@ the step. The figure never rotates.
 ### 4.3 The detector
 
 `src/game/Detector.ts`. The rod is a line from the player to the head, with a small non-rotating coil sprite at the tip.
-It leans toward the lane step at 140 deg/s up to 70 deg, and eases back to centre at 90 deg/s once the step ends. The
+It leans toward the lane step at 140 deg/s up to 70 deg, and eases back to center at 90 deg/s once the step ends. The
 rod is 46 px, drawn from the top of the figure. The head's measured position is still on the treasure pixel strip, so
 beeping and digging have not moved onto the walking-seconds axis.
 

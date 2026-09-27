@@ -28,5 +28,5 @@ export function laneFromX(x: number): number {
 }
 
 if (laneFromX(laneCenterX(0)) !== 0 || laneFromX(laneCenterX(CONFIG.laneCount - 1)) !== CONFIG.laneCount - 1) {
-    throw new Error('Lanes.ts: a lane centre is outside its lane');
+    throw new Error('Lanes.ts: a lane center is outside its lane');
 }

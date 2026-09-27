@@ -42,37 +42,36 @@ export class Player {
     private readonly playerSheet: SpriteSheet;
 
     /** Lane the figure has arrived at. */
-    private laneIndex!: number;
+    private laneIndex = START_LANE;
 
     /** Drawn x, a float while a step is in flight. */
-    private currentX!: number;
+    private currentX = laneCenterX(START_LANE);
 
-    private toLane!: number;
+    private toLane = START_LANE;
 
-    private fromX!: number;
+    private fromX = laneCenterX(START_LANE);
 
-    private toX!: number;
+    private toX = laneCenterX(START_LANE);
 
-    private moveElapsedSeconds!: number;
+    private moveElapsedSeconds = 0;
 
-    private isMoving!: boolean;
+    private isMoving = false;
 
     /** One tap remembered during a step. 0 when empty. */
-    private queuedDirection!: -1 | 0 | 1;
+    private queuedDirection: -1 | 0 | 1 = 0;
 
     /** Seconds of walking. Advances one per second whether or not the figure changes lanes. */
-    private walkSeconds!: number;
+    private walkSeconds = 0;
 
-    private sinceStampSeconds!: number;
+    private sinceStampSeconds = 0;
 
-    private lastStampX!: number;
+    private lastStampX = laneCenterX(START_LANE);
 
     /** Startup wiring, not per-run state: reset() leaves it alone. */
     private readonly footprintListeners: FootprintListener[] = [];
 
     constructor(playerSheet: SpriteSheet) {
         this.playerSheet = playerSheet;
-        this.settle();
     }
 
     /** Back to the middle lane, settled, walk clock at zero. Listeners are kept. */
@@ -122,7 +121,7 @@ export class Player {
         BT.drawSprite(this.playerSheet, cellRect(PLAYER_SHEET, 0), new Vector2i(drawX, PLAYER_SPRITE_TOP_Y));
     }
 
-    /** Lane-centre x in screen pixels. The sprite is drawn centred on it. */
+    /** Lane-center x in screen pixels. The sprite is drawn centered on it. */
     get worldX(): number {
         return this.currentX;
     }
