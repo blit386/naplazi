@@ -182,9 +182,9 @@ machine. Everything else is one small file per concern:
 - `src/playtest.ts` - the dev-only `window.__game`. `?seed=N` is the engine's, applied to `BT.random` before `init()`.
   `Game.playtestState()` in `game.ts` is the snapshot; add a field there when a test needs to check something new.
 
-`Backpack`, `Haptics`, `Lanes`, `Pause` (in `src/game/`) and `SignalBar` (in `src/hud/`) are written but not wired into
-`game.ts` yet (find panel, item types, the five-lane grid behind `CONFIG.lane*`). `knip.json` lists them under `ignore`;
-delete each entry when its file gets used.
+`Backpack`, `Haptics`, `Pause` (in `src/game/`) and `SignalBar` (in `src/hud/`) are written but not wired into `game.ts`
+yet (find panel, item types). `Lanes` is used by the player. `knip.json` lists the unwired files under `ignore`; delete
+each entry when its file gets used.
 
 Design docs: `docs/design/game.md` describes the game as it plays today (update it when behavior changes);
 `docs/design/roadmap.md` holds the lane-based redesign that is not built yet, in build order, and the open code cleanup.

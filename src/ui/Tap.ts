@@ -1,8 +1,7 @@
 /**
  * Shared "was the screen just tapped, and where" for the title and results screens. Uses
  * BT.isPressed(BT.BTN_POINTER_A, slot), an edge that is true on exactly one update() per press, so a
- * screen switch can never re-read the tap that caused it. Player.ts reads the same button as a held
- * state instead.
+ * screen switch can never re-read the tap that caused it. Player.ts reads the same edge for lane steps.
  */
 
 import { BT, type Vector2i } from 'blit386';
@@ -17,5 +16,6 @@ export function findJustPressedPointerPos(): Vector2i | null {
             return BT.pointerPos(slot);
         }
     }
+
     return null;
 }

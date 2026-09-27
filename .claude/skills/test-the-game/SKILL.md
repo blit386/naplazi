@@ -30,8 +30,9 @@ Use this after a change to gameplay, input, or drawing, to reproduce a bug the u
      the only value it accepts.
 3. Give the canvas keyboard focus without clicking it: run `document.querySelector('canvas').focus()` in the page. The
    game opens on its title screen, which waits for a press anywhere. Start it with a real mouse press held for about 100
-   ms (a press that is over within one game step, 1/60 s, is never seen). Once playing, the player steers with the arrow
-   keys or A and D, or with a held mouse button on the left or right half of the screen. Mouse hover does not steer.
+   ms (a press that is over within one game step, 1/60 s, is never seen). Once playing, a press of the arrow keys or
+   A/D, or a tap on the left or right half of the screen, steps one lane. Holding does not keep stepping. Mouse hover
+   does not step.
 4. Read the state. Run this JavaScript in the page:
 
    ```js
@@ -60,7 +61,7 @@ Use this after a change to gameplay, input, or drawing, to reproduce a bug the u
 - `ticks` climbs between two reads.
 - The browser console shows no errors.
 - The numbers you meant to change moved the way you expected (`screen` went from `title` to `play` after the press,
-  `player.x` went down while `KeyA` was held, `collected` went up after walking over a buried item).
+  `player.x` moved one lane after a `KeyA` press, `collected` went up after walking over a buried item).
 - The same seed and the same key presses give the same state. Seeded things (where items are buried, how the day clock
   advances per tick) match exactly, on WebGPU and on the software renderer alike. Things you steered can differ by a
   step or two, because a key press lands in real time, not on an exact tick.
@@ -94,7 +95,8 @@ pnpm run play -- --seed 42 wait:800 click:90:160 wait:1500 state hold:ArrowRight
 
 - `window.__game` is set up by `src/playtest.ts`, and the snapshot it returns is `Game.playtestState()` in
   `src/game.ts`. Add a field there (and to `PlaytestState`) when you need to check something new. Keep it plain numbers,
-  strings, and arrays so a browser tool can print it. Positions in the state are world coordinates, not screen pixels.
+  strings, and arrays so a browser tool can print it. `player.x` is screen pixels, `player.y` is seconds of walking, and
+  `lane` is the lane being stepped to (0 is leftmost). `detectorHead` is on the treasure pixel strip.
 - An older game without `window.__game` still has `window.BT` in a dev build: `BT.ticks`, `BT.activeBackend`, and
   `BT.captureFrame()` (it returns a PNG `Blob`) work straight away. See `use-dev-mode`.
 - Both `window.__game` and `window.BT` exist only while the dev server runs the game. A built game has neither.

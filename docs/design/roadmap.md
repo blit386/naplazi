@@ -16,9 +16,6 @@ reading the signal and choosing a lane.
 
 ### The idea
 
-- **The figure walks on its own**, forward, at a constant pace; the player cannot stop it or speed it up.
-- **Five invisible lanes.** A tap on the left or right half of the screen moves one lane. Holding does nothing extra.
-  That is the only control.
 - **The detector swings on its own**, left to right and back, independent of input. You do not aim it, you listen to it:
   when the head swings over something buried, the beeps get denser, and _when_ in the swing they do tells you which side
   it is on.
@@ -35,13 +32,10 @@ reading the signal and choosing a lane.
 y 288 down. Horizontally: sea strip x 0-17, then five 30 px lanes (centres 33, 63, 93, 123, 153), then 12 px of sand. A
 run starts in lane 2.
 
-**Walking and the beach.** `worldY` is measured in **seconds of walking**: the player advances one unit per second, so
-the `worldY` gap between a treasure and the player is simply "seconds until it reaches my feet". Projection:
-`u = (object.worldY - player.worldY) / 8` (0 = at the feet, 1 = at the horizon), then
+**Walking and the beach.** The player and the sand already scroll this way; see `game.md`. Treasures do not yet. When
+they do, `worldY` is seconds of walking, and the gap to the player is seconds until the item reaches the feet.
+Projection: `u = (object.worldY - player.worldY) / 8` (0 = at the feet, 1 = at the horizon), then
 `screenY = 276 - (276 - 108) * u ^ (1 / 2.2)`. A treasure takes 8 s from horizon to feet.
-
-**Lane moves.** A move animates over 0.15 s. One extra tap is queued during a move, so a quick double tap skips two
-lanes. A tap outward from an edge lane is ignored. Keyboard: one step per press of left/right or A/D.
 
 **Detector swing.** `angle = 45 deg * sin(2 * pi * t / 1.2 s)`, rod 68 px from a pivot at y 262, so the head reaches
 +-48 px (1.6 lanes) sideways. The head passes any spot twice per cycle: a fresh reading every ~0.6 s.
@@ -95,10 +89,9 @@ onboarding in the first version.
 ### What already exists
 
 - **Done and in the game:** the four-phase palette and its fade, the day clock with four phases, phase ambience, the
-  bitmap HUD and digits, sprite loading, footprints, title and results screens, and `CONFIG` fields for lanes, the sea,
-  and the signal bar.
+  bitmap HUD and digits, sprite loading, footprints, title and results screens, lane steps on the walking-seconds beach,
+  and `CONFIG` fields for the sea and the signal bar.
 - **Written but not wired in** (listed under `ignore` in `knip.json`; delete each entry when its file gets used):
-  - `src/game/Lanes.ts` - lane centre, clamp, x-to-lane, playable range. Correct as written.
   - `src/game/Backpack.ts` - per-run counts and first-find flag for six types. Correct as written.
   - `src/hud/SignalBar.ts` - `renderSignalBar(strength, headNormalizedX)`.
   - `src/game/Haptics.ts` - the three event vibrations. Calls `navigator.vibrate` **without** `try`/`catch`; wrap it
@@ -111,29 +104,26 @@ onboarding in the first version.
 
 Each task replaces the matching part of `game.md` when it lands.
 
-1. [ ] **Walking and lanes.** Rewrite `Player.ts` for lane moves (tap edges only, one queued step, 0.15 s) on top of
-       `Lanes.ts`. Change `Beach.ts` to walking-seconds `worldY` and the projection above. Footprints follow the drawn
-       position so lane changes show.
-2. [ ] **The sea.** Draw the sea band and the left water strip; the sand band starts at y 108. Add a slowly moving surf
+1. [ ] **The sea.** Draw the sea band and the left water strip; the sand band starts at y 108. Add a slowly moving surf
        line and a one-pixel wobble on the strip's edge.
-3. [ ] **Self-swinging detector.** Rewrite `Detector.ts`: sine swing from the pivot, independent of input; expose the
+2. [ ] **Self-swinging detector.** Rewrite `Detector.ts`: sine swing from the pivot, independent of input; expose the
        head position and the normalized swing phase (-1 to 1) for pan and the signal bar.
-4. [ ] **Treasures in lanes.** Rewrite `Treasures.ts`: gaps in walking seconds, lane plus jitter, six types, collect at
+3. [ ] **Treasures in lanes.** Rewrite `Treasures.ts`: gaps in walking seconds, lane plus jitter, six types, collect at
        the feet within 14 px, silent removal on a miss; expose the nearest treasure ahead and a dig event carrying the
        type. Remove `COLLECTION_MODE` and the collect/beep fields from `DETECTOR`.
-5. [ ] **Signal.** New `src/game/Signal.ts` that owns target selection, the beep clock, and the four quantities, plus a
+4. [ ] **Signal.** New `src/game/Signal.ts` that owns target selection, the beep clock, and the four quantities, plus a
        "new target in range" event. It replaces `computeBeepIntervalMs()` in `Sfx.ts` and the beep clock that
        `Signals.ts` reads. `Sfx` plays the beep with `{ volume, pitch, pan }` from a 440 Hz clip.
-6. [ ] **Feedback channels.** Wire `SignalBar` and `Haptics` (events only). Keep the tip blink. Remove the border pulse,
+5. [ ] **Feedback channels.** Wire `SignalBar` and `Haptics` (events only). Keep the tip blink. Remove the border pulse,
        the per-beep vibration, and `CONFIG.beepBorderPulse`.
-7. [ ] **Pause.** Fix and wire `Pause.ts`; the day clock, systems, and beeping all stop through it.
-8. [ ] **Find panel and backpack.** New `FoundPanel.ts` replacing `Pickup.ts`, using the pause; wire `Backpack`; the
+6. [ ] **Pause.** Fix and wire `Pause.ts`; the day clock, systems, and beeping all stop through it.
+7. [ ] **Find panel and backpack.** New `FoundPanel.ts` replacing `Pickup.ts`, using the pause; wire `Backpack`; the
        counter reads the backpack total.
-9. [ ] **HUD and screens.** Blinking watch colon, two-digit counter, the game name on the title, a pause state, the
+8. [ ] **HUD and screens.** Blinking watch colon, two-digit counter, the game name on the title, a pause state, the
        results board of six types, tap anywhere to restart.
-10. [ ] **Assets.** Add to `tools/make-sprites.mjs`: the figure holding a find overhead, the glass shard and key (both
-        sizes), the NEW badge, and grey silhouettes for the results board.
-11. [ ] **Optional - onboarding.** Only if first players do not get the controls: a wordless loop on the title (figure,
+9. [ ] **Assets.** Add to `tools/make-sprites.mjs`: the figure holding a find overhead, the glass shard and key (both
+       sizes), the NEW badge, and grey silhouettes for the results board.
+10. [ ] **Optional - onboarding.** Only if first players do not get the controls: a wordless loop on the title (figure,
         swinging detector, a hand tapping left and right), and/or the first treasure of each run always in the player's
         lane. Both behind a config flag.
 
@@ -154,7 +144,7 @@ From a review of the current code. None of these change behavior.
 4. [ ] **Untangle shared constants.** Several modules import a constant from an unrelated system: `HUD_BAND_HEIGHT_PX`
        comes from `Player` (used by `Pickup` and `Watch`), the projection from `Beach`, the beep tuning from `Detector`
        (used by `Sfx` and `Treasures`). Move true shared invariants into a small shared module. Much of this goes away
-       with redesign tasks 1-5.
+       with the rest of the redesign.
 5. [ ] **Delete dead snapshot getters.** `getTreasureSnapshot()`, `getDecorationSnapshot()`, `getFootprintSnapshot()`,
        and `getRevealSnapshot()` have no callers; play-testing reads `window.__game.state()` instead.
 6. [ ] **Validate config once.** A `validateConfig()` called at the start of `init()`, replacing the two module-level
