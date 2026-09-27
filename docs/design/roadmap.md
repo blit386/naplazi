@@ -16,9 +16,6 @@ reading the signal and choosing a lane.
 
 ### The idea
 
-- **The figure walks on its own**, forward, at a constant pace; the player cannot stop it or speed it up.
-- **Five invisible lanes.** A tap on the left or right half of the screen moves one lane. Holding does nothing extra.
-  That is the only control.
 - **The detector swings on its own**, left to right and back, independent of input. You do not aim it, you listen to it:
   when the head swings over something buried, the beeps get denser, and _when_ in the swing they do tells you which side
   it is on.
