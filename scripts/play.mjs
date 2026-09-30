@@ -140,7 +140,11 @@ async function runStep(page, step) {
         }
         case 'state':
             return page.evaluate(() => {
-                const envelope = window.BT.testState();
+                // An engine older than BT.testState() has no hook to call; BT.ticks still works.
+                const envelope =
+                    typeof window.BT.testState === 'function'
+                        ? window.BT.testState()
+                        : { ticks: window.BT.ticks, backend: window.BT.activeBackend, state: null };
 
                 return envelope.state ?? envelope;
             });
