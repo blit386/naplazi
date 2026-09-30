@@ -36,10 +36,11 @@ Use this after a change to gameplay, input, or drawing, to reproduce a bug the u
 4. Read the state. Run this JavaScript in the page:
 
    ```js
-   window.__game.state();
+   window.BT.testState();
    ```
 
-   It returns plain data, for example
+   It returns `{ ticks, backend, state }`, where `state` is the game's own `testState()` (`null` if it has none), for
+   example
    `{ ticks, screen, seed, collected, dayProgress, gameTimeMinutes, phase, player: { x, y }, detectorHead: { x, y }, nearestTreasurePx, ... }`.
    `screen` is `title`, `play` or `results`. Read it twice about a second apart: `ticks` should have grown by about 60,
    and once playing `dayProgress` climbs from 0 to 1 over two real minutes.
@@ -51,7 +52,7 @@ Use this after a change to gameplay, input, or drawing, to reproduce a bug the u
 6. Grab an exact frame when you need to see the picture:
 
    ```js
-   await window.__game.frame(); // a PNG data URL of the next frame
+   await window.BT.captureFrame({ size: 'display' }); // a PNG Blob at the game's logical size
    ```
 
    This is sharper than a browser screenshot: it is the game's own pixels, not scaled by the page.
@@ -73,7 +74,7 @@ The steps above need a browser tool that can run JavaScript in the page and pres
 - **Claude desktop app browser pane:** navigate to the URL, run the snippets with its JavaScript tool, press keys with
   its keyboard action.
 - **Cursor's built-in browser:** it can open the page and take screenshots, but it cannot run JavaScript or press keys,
-  so it cannot read `window.__game`. Use the terminal script below instead.
+  so it cannot read `window.BT.testState()`. Use the terminal script below instead.
 
 ## From the terminal (works in any assistant)
 
@@ -93,13 +94,13 @@ pnpm run play -- --seed 42 wait:800 click:90:160 wait:1500 state hold:ArrowRight
 
 ## Notes
 
-- `window.__game` is set up by `src/playtest.ts`, and the snapshot it returns is `Game.playtestState()` in
-  `src/game.ts`. Add a field there (and to `PlaytestState`) when you need to check something new. Keep it plain numbers,
-  strings, and arrays so a browser tool can print it. `player.x` is screen pixels, `player.y` is seconds of walking, and
-  `lane` is the lane being stepped to (0 is leftmost). `detectorHead` is on the treasure pixel strip.
-- An older game without `window.__game` still has `window.BT` in a dev build: `BT.ticks`, `BT.activeBackend`, and
-  `BT.captureFrame()` (it returns a PNG `Blob`) work straight away. See `use-dev-mode`.
-- Both `window.__game` and `window.BT` exist only while the dev server runs the game. A built game has neither.
+- `BT.testState()` calls `Game.testState()` in `src/game.ts`. Add a field there when you need to check something new.
+  Keep it plain numbers, strings, and arrays so a browser tool can print it. `player.x` is screen pixels, `player.y` is
+  seconds of walking, and `lane` is the lane being stepped to (0 is leftmost). `detectorHead` is on the treasure pixel
+  strip.
+- A game without a `testState()` method still answers `BT.testState()` with `state: null`, and `BT.ticks`,
+  `BT.activeBackend` and `BT.captureFrame()` (a PNG `Blob`) work straight away. See `use-dev-mode`.
+- `window.BT` exists only while the dev server runs the game. A built game does not have it.
 - `?seed=` seeds `BT.random` before `init()` (engine 1.8.0). The game does not read the URL. Every roll goes through
   `BT.random`, never `Math.random()`. A restart draws the next seed from that same generator. See `use-random`.
 - If the browser pane or tab is hidden, the browser slows the page down and `ticks` climbs slowly. Keep it visible while

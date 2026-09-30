@@ -28,7 +28,7 @@ Steps (keys use KeyboardEvent.code names: ArrowLeft, KeyA, Space, Enter, ...):
   hold:<key>:<ms>     Hold a key down for <ms> milliseconds.
   move:<x>:<y>        Move the mouse to game pixel (x, y).
   click:<x>:<y>       Click at game pixel (x, y), holding the button for 100 ms so the game sees it.
-  state               Print window.__game.state() (or BT.ticks if the game has no __game).
+  state               Print the game's testState() (or { ticks, backend, state: null } if it has none).
   shot[:<file.png>]   Save the current frame, sharp and unscaled by the browser (default: screenshots/tick-<n>.png).
   eval:<expression>   Print the result of a JavaScript expression run in the game page (BT is available).
 
@@ -139,7 +139,11 @@ async function runStep(page, step) {
             return undefined;
         }
         case 'state':
-            return page.evaluate(() => (window.__game ? window.__game.state() : { ticks: window.BT.ticks }));
+            return page.evaluate(() => {
+                const envelope = window.BT.testState();
+
+                return envelope.state ?? envelope;
+            });
         case 'shot': {
             const { ticks, dataURL } = await page.evaluate(async () => {
                 const blob = await window.BT.captureFrame();

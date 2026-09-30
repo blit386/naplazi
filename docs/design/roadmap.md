@@ -146,7 +146,7 @@ From a review of the current code. None of these change behavior.
        (used by `Sfx` and `Treasures`). Move true shared invariants into a small shared module. Much of this goes away
        with the rest of the redesign.
 5. [ ] **Delete dead snapshot getters.** `getTreasureSnapshot()`, `getDecorationSnapshot()`, `getFootprintSnapshot()`,
-       and `getRevealSnapshot()` have no callers; play-testing reads `window.__game.state()` instead.
+       and `getRevealSnapshot()` have no callers; play-testing reads `window.BT.testState()` instead.
 6. [ ] **Validate config once.** A `validateConfig()` called at the start of `init()`, replacing the two module-level
        checks in `Watch.ts` and `Pickup.ts`, so a bad value fails at startup rather than mid-game.
 7. [ ] **Unit tests for pure logic - your call.** The project has no test runner on purpose; checks are

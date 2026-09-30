@@ -201,7 +201,6 @@ src/
   game.ts              bootstrap, wiring, the title / play / results state machine
   config.ts            shared settings (section 5)
   sprites.ts           sprite sheet geometry, loading, drawDigitString()
-  playtest.ts          dev-only window.__game for pnpm run play
   palette/palette.ts   slot layout, phase keyframes, the phase fade
   game/                Beach, Player, Detector, Treasures, Signals, Pickup, DayClock
   hud/                 Counter, Watch

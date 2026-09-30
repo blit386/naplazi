@@ -54,10 +54,6 @@ reviews:
         `tools/make-sprites.mjs` imports these two files directly through Node type stripping. They may import only
         `blit386` (no relative imports) and must stay erasable TypeScript: no enums, no parameter properties, no
         namespaces.
-    - path: 'src/playtest.ts'
-      instructions: >-
-        Dev-only `window.__game` hook for `pnpm run play`. It must stay gated to dev builds so it never ships in a
-        release build. The snapshot itself lives in `Game.playtestState()` in `src/game.ts`.
     - path: 'tools/**'
       instructions: >-
         Offline sprite generator (`pnpm run sprites`), not runtime code. It reads geometry from `src/sprites.ts` and
@@ -73,7 +69,7 @@ reviews:
       instructions: >-
         Every skill here except `test-the-game/` is a kit-owned copy overwritten by `npx blit agents sync`; do not
         review those, fixes belong upstream in `blit386/packages/kit/content/skills/`. `test-the-game/` is hand-written
-        for this game: keep it accurate to `scripts/play.mjs` and `window.__game`.
+        for this game: keep it accurate to `scripts/play.mjs` and `BT.testState()`.
     - path: '{AGENTS.md,CLAUDE.md}'
       instructions: >-
         Shared with the kit: everything above "Your notes" is kit content refreshed by `npx blit agents sync` - do not
