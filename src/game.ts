@@ -18,7 +18,6 @@ import { Treasures } from './game/Treasures';
 import { Counter } from './hud/Counter';
 import { Watch } from './hud/Watch';
 import { buildPalette, REFERENCE_PHASE, SKY_ZENITH, startPhaseTransition } from './palette/palette';
-import { installPlaytestHooks, type PlaytestState } from './playtest';
 import { loadSpriteSheets, type SpriteSheets } from './sprites';
 import { loadHighScore, saveHighScoreIfBetter } from './ui/HighScore';
 import { ResultsScreen } from './ui/ResultsScreen';
@@ -149,16 +148,14 @@ class Game {
             this.screenState = 'results';
         });
 
-        installPlaytestHooks(() => this.playtestState());
-
         // Title renders before the first play update, so the rod has to start on the figure.
         this.detector.update(0, this.player.worldX, 0);
 
         return true;
     }
 
-    /** The snapshot window.__game.state() returns. Reads public getters only. */
-    private playtestState(): PlaytestState {
+    /** The `state` of `BT.testState()`, read by `pnpm run play` and the test-the-game skill. Public getters only. */
+    testState() {
         const nearest = this.treasures.nearestDistancePx;
 
         return {

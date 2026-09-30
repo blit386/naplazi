@@ -151,7 +151,7 @@ Add project-specific notes for Claude here. This section is yours.
   `scripts/format-file.sh`. New words the spellchecker flags go in `cspell.json`.
 - Agents play-test with `pnpm run play` (`scripts/play.mjs`, drives the local Chrome or Edge through playwright-core):
   see the `test-the-game` skill (`.claude/skills/`, which Cursor 2.4+ reads too). Both are hand-written stand-ins until
-  the kit ships `blit play` and its own skill (BT-528). Dev builds expose `window.__game.state()`; `?seed=N` repeats a
+  the kit ships `blit play` and its own skill (BT-528). Dev builds expose `window.BT.testState()`; `?seed=N` repeats a
   run.
 - `BLIT386_ENGINE_DIR=<path to packages/blit386>` points dev and build at another engine checkout (a worktree) instead
   of `../../blit386/packages/blit386`. Typecheck still reads the main checkout's types.
@@ -179,8 +179,9 @@ machine. Everything else is one small file per concern:
 - `src/audio/` - `Sfx` (synthesized tick, chime, alarm) and `Ambience` (the phase-based bed, cross-faded).
 - `src/ui/` - `TitleScreen`, `ResultsScreen`, `HighScore` (`localStorage`, guarded), `Tap` (the shared "was the screen
   just tapped" helper).
-- `src/playtest.ts` - the dev-only `window.__game`. `?seed=N` is the engine's, applied to `BT.random` before `init()`.
-  `Game.playtestState()` in `game.ts` is the snapshot; add a field there when a test needs to check something new.
+- Play-testing: `Game.testState()` in `game.ts` is the hook the engine wraps as `BT.testState()`
+  (`{ ticks, backend, state }`) in dev builds; add a field there when a test needs to check something new. `?seed=N` is
+  the engine's, applied to `BT.random` before `init()`.
 
 `Backpack`, `Haptics`, `Pause` (in `src/game/`) and `SignalBar` (in `src/hud/`) are written but not wired into `game.ts`
 yet (find panel, item types). `Lanes` is used by the player. `knip.json` lists the unwired files under `ignore`; delete
