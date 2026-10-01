@@ -46,8 +46,8 @@ Use this after a change to gameplay, input, or drawing, to reproduce a bug the u
    and once playing `dayProgress` climbs from 0 to 1 over two real minutes.
 
 5. Press keys, then read the state again. Keys use `KeyboardEvent.code` names: `KeyA`, `KeyD`, `ArrowLeft`,
-   `ArrowRight`. Player 0 uses W, A, S, D out of the box; this game also maps the left and right arrow keys. The game
-   runs in real time (about 60 steps a second), so read the state after a key press instead of assuming how far
+   `ArrowRight`. This game sets `keyboardLayout: 'single'`, so player 0 answers to both W, A, S, D and the arrow keys.
+   The game runs in real time (about 60 steps a second), so read the state after a key press instead of assuming how far
    something moved.
 6. Grab an exact frame when you need to see the picture:
 
