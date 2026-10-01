@@ -124,8 +124,8 @@
     {
       "path": ".claude/skills/run/SKILL.md",
       "class": "kit-owned",
-      "kitVersion": "1.7.0",
-      "sha256": "246c59b4d1a0bbdf11a52783c298042ff8345ea8b823f967db3a066259ef44bf"
+      "kitVersion": "1.7.1",
+      "sha256": "182ced52b5a0be6c0dc389d204a6607b07770662f2b72c6060719869840f291f"
     },
     {
       "path": ".claude/skills/save-a-screenshot/SKILL.md",
@@ -292,8 +292,8 @@
     {
       "path": ".cursor/commands/run.md",
       "class": "kit-owned",
-      "kitVersion": "1.7.0",
-      "sha256": "85856e8dc1ff7527b777a2055e988bf1a238014cff2f0c0ae8d63eadb393c2de"
+      "kitVersion": "1.7.1",
+      "sha256": "4f7ae7adfe6174ad2ea3f5042a46228fc4a12282439b78ce847fdfdb92bbf673"
     },
     {
       "path": ".cursor/commands/save-a-screenshot.md",
