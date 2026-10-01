@@ -36,10 +36,27 @@ update() {
 }
 ```
 
-On a keyboard, the arrow keys map to the D-pad and Space maps to `BTN_A` by default, so these work with no extra setup.
+On a keyboard, player 0's D-pad is W, A, S, D and Space maps to `BTN_A` by default, so these work with no extra setup.
 
-Arrow keys and Space also scroll the web page by default. When your game uses them, opt in so the page does not move
-while you play:
+> **The arrow keys do nothing for player 0 by default.** Out of the box the engine assumes two keyboard players: W, A,
+> S, D steer player 0 and the arrow keys steer player 1. A one-player game that wants both sets of keys should say so in
+> `configure()`:
+
+```js
+configure() {
+  return {
+    keyboardLayout: 'single', // WASD and the arrow keys both steer player 0 (engine 1.7.2+)
+  };
+}
+```
+
+With `'single'`, player 1 moves to I, J, K, L, and the arrow keys stop scrolling the web page. The default is `'versus'`
+(WASD for player 0, arrows for player 1). To change only one button instead, remap it:
+`BT.inputMap(0, BT.BTN_LEFT, 'KeyA', 'ArrowLeft')` - this replaces that button's keys, so list WASD too if you want
+both.
+
+Arrow keys and Space also scroll the web page by default (unless you use `keyboardLayout: 'single'`). When your game
+uses them, opt in so the page does not move while you play:
 
 ```js
 configure() {

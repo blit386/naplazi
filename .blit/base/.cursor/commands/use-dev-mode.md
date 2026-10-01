@@ -44,6 +44,34 @@ Left alone, both follow `BT.isDevMode`, so neither ships to players by accident.
 wins over that default - `exposeGlobal: true` for the first, `isFrameCaptureShortcutEnabled: true` for the second - if
 you want one in a release build on purpose.
 
+## Let an agent read the game's state (engine 1.7.2+)
+
+Add a `testState()` method to your game class that returns what a play-tester needs to check, as plain JSON:
+
+```js
+testState() {
+    return {
+        score: this.score,
+        lives: this.lives,
+        player: { x: this.player.x, y: this.player.y },
+    };
+}
+```
+
+Then, in a dev build, `window.BT.testState()` in the browser console (or an agent's JavaScript call) returns
+`{ ticks, backend, state }`: the engine's tick counter, the active backend, and a copy of what your method returned.
+Read it twice about a second apart and `ticks` should have grown by about 60.
+
+- Nothing else to wire up: no `window.__game`, no `declare global` block, no `if (BT.isDevMode)` around it. It rides on
+  `window.BT`, which only a dev build has.
+- Keep it plain JSON: numbers, strings, booleans, `null`, arrays, and plain objects. The engine copies the result, so a
+  `Vector2i` arrives as `{ x, y }` and functions or `undefined` fields are dropped.
+- Without the method, `state` is `null` and `ticks` and `backend` still work.
+- If the method throws or returns something JSON cannot hold (an object that contains itself, a `BigInt`), the call
+  still returns: `state` is `null`, `error` holds the message, and the browser console shows `[BT] testState() threw:`.
+- It keeps working after a hot reload rebuilds the game object - the engine asks the current one every time.
+- The engine never calls it on its own, so it costs nothing during play. See `test-the-game` for using it.
+
 ## Notes
 
 - `BT.isDevMode` is tied to the dev server, not to `NODE_ENV` or any bundler define - there is nothing else to
