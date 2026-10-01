@@ -90,15 +90,13 @@ class Game {
             // Touch-drag and arrow keys move the player; without these the page would scroll instead.
             isCapturingPointerScroll: true,
             isCapturingKeyboardScroll: true,
+
+            // One player: WASD and the arrow keys both drive player 0.
+            keyboardLayout: 'single',
         };
     }
 
     async init(): Promise<boolean> {
-        // Player 0 defaults to WASD; arrow keys are player 1's. inputMap replaces a button's whole key
-        // list, so both keys are named. Idempotent, so safe to re-run on hot reload.
-        BT.inputMap(0, BT.BTN_LEFT, 'KeyA', 'ArrowLeft');
-        BT.inputMap(0, BT.BTN_RIGHT, 'KeyD', 'ArrowRight');
-
         const palette = buildPalette(REFERENCE_PHASE);
         BT.paletteSet(palette);
 

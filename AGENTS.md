@@ -190,17 +190,12 @@ A press that starts and ends between two `update()` ticks (under 1/60 s) is neve
 
 #### Keyboard defaults, and `BT.inputMap` replaces
 
-The engine's built-in keyboard map gives player 0 the WASD keys and player 1 the arrow keys. This game has one player,
-so `init()` calls:
+The engine's default keyboard map ('versus') gives player 0 the WASD keys and player 1 the arrow keys. This game has one
+player, so `configure()` sets `keyboardLayout: 'single'`, which gives player 0 WASD plus the arrows (player 1 moves to
+IJKL). The layout is seeded at init only, so changing it needs a full page reload, not a hot swap.
 
-```ts
-BT.inputMap(0, BT.BTN_LEFT, 'KeyA', 'ArrowLeft');
-BT.inputMap(0, BT.BTN_RIGHT, 'KeyD', 'ArrowRight');
-```
-
-Both calls name the default key and the arrow key together on purpose: `BT.inputMap` sets a button's whole key list, it
-does not append to it. A call naming only `'ArrowLeft'` would silently un-map `KeyA`. Safe to run on every `init()` (hot
-reload re-runs it): it always sets the same two lists.
+If you need a custom binding, `BT.inputMap(player, button, ...keys)` sets a button's whole key list, it does not append:
+a call naming only `'ArrowLeft'` would silently un-map `KeyA`.
 
 #### Audio unlock is not synchronous with the gesture
 
