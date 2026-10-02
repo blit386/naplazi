@@ -11,7 +11,7 @@
       "path": ".claude/hooks/protect-files.cjs",
       "class": "kit-owned",
       "kitVersion": "1.7.1",
-      "sha256": "892b2b120a84f3e28dfaa5cfb7419e11812da36c10c64d6c97dd4bf1846201e0"
+      "sha256": "faf49f0efc40a0069278d241ebaf9731a8ad3f5c0d20ef7c55f76f1bd16a098c"
     },
     {
       "path": ".claude/hooks/session-start.sh",
