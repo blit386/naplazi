@@ -1,6 +1,8 @@
 # Read the keyboard
 
-Read keys and face buttons in `update()`. Arrow keys and Space already map to the D-pad and `BTN_A`.
+Read keys and face buttons in `update()`. For player 0, W, A, S, D already map to the D-pad and Space to `BTN_A`; the
+arrow keys belong to player 1 by default. A one-player game that wants the arrows too sets `keyboardLayout: 'single'`
+(see One-player game below).
 
 ## When to use
 
@@ -17,6 +19,19 @@ update() {
 ```
 
 Player number is `0` for a one-player game. Directions: `BT.BTN_LEFT/RIGHT/UP/DOWN`; actions: `BT.BTN_A/B/X/Y`.
+
+## One-player game: WASD and the arrow keys
+
+```js
+configure() {
+    return {
+        keyboardLayout: 'single', // player 0: WASD and arrows; player 1: IJKL (engine 1.7.2+)
+    };
+}
+```
+
+`'single'` also stops the arrow keys scrolling the page (unless you set `isCapturingKeyboardScroll: false`). The
+default, `'versus'`, keeps WASD for player 0 and the arrows for player 1 - right for a two-player keyboard game.
 
 ## Raw keys by name
 
@@ -38,7 +53,8 @@ this.name += BT.inputString; // characters typed this frame (a getter)
 
 ```js
 BT.inputMap(0, BT.BTN_A, 'KeyZ', 'Space'); // player, button, one or more key codes
-BT.inputMapReset(); // back to defaults
+BT.inputMap(0, BT.BTN_LEFT, 'KeyA', 'ArrowLeft'); // replaces the list, so keep 'KeyA' to keep WASD working
+BT.inputMapReset(); // back to the keyboardLayout's defaults
 ```
 
 ## Key calls
@@ -54,6 +70,7 @@ BT.inputMapReset(); // back to defaults
   by the time `render()` runs, so checking them there can silently drop taps under fast input.
 - "Down" means held every frame; "Pressed" / "Released" is the single edge frame.
 - Arrow keys and Space scroll the host page by default. Set `isCapturingKeyboardScroll: true` in `configure()` when your
-  game maps those keys so the page does not move while the canvas is focused.
+  game maps those keys so the page does not move while the canvas is focused (`keyboardLayout: 'single'` turns it on for
+  you).
 
 See `docs/input.md`.

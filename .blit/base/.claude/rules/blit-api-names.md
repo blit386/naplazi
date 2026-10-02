@@ -83,6 +83,7 @@ configure() {
         isWakeLockEnabled: true, // opt in to stop mobile screens dimming during play
         isFrameCaptureShortcutEnabled: false, // opt out of the dev-mode F9 / Shift+F9 capture keys (engine 1.7.0+)
         preferredOrientation: 'landscape', // ask the browser to lock after start (Android)
+        keyboardLayout: 'single', // WASD and arrows both steer player 0 (engine 1.7.2+)
     };
 }
 ```
@@ -94,6 +95,10 @@ can tap-hold-scroll the page), `none` when on (the game owns the gesture).
 Keyboard scroll capture defaults to off so arrow keys and Space still scroll the host page while the canvas is focused.
 Set `isCapturingKeyboardScroll: true` when your game maps those keys (for example ArrowUp/Down or Space as a face
 button).
+
+`keyboardLayout` is a string, not an `is*` flag: `'versus'` (default) gives player 0 W, A, S, D and player 1 the arrow
+keys; `'single'` gives player 0 both sets and moves player 1 to I, J, K, L. `'single'` also turns keyboard scroll
+capture on unless `isCapturingKeyboardScroll` is set explicitly.
 
 Screen wake lock defaults to off. Set `isWakeLockEnabled: true` so phones and tablets do not dim or lock the screen
 during active play; the engine requests it after a successful start and silently does nothing on browsers that do not
@@ -117,6 +122,11 @@ Optional methods on your game class (the one you pass to `bootstrap()`):
   current value any time from `BT.isReducedMotionPreferred`; this hook is for reacting mid-session. The engine tones
   down its own splash for you, but never changes your draw calls - toning down shake, flicker, and long transitions is
   your code.
+- `testState()` - return the game's state as plain JSON (numbers, strings, booleans, arrays, plain objects) for
+  play-testing (engine 1.7.2+). The engine never calls it on its own; `BT.testState()` reads it and returns
+  `{ ticks, backend, state }`, and in a dev build an agent reads that with `window.BT.testState()`. `state` is a deep
+  copy (a `Vector2i` arrives as `{ x, y }`), or `null` when the game has no hook. A throw, a cycle, or a `BigInt` gives
+  `state: null` plus an `error` message instead of throwing. See the `use-dev-mode` skill.
 
 Do not call `registerHotReload` yourself - it is tooling-only. The `blit386()` Vite plugin injects it. Hand-calling it
 from game code is unsupported.
