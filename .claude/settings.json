@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh \"$CLAUDE_PROJECT_DIR/scripts/format-file.sh\"",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/format-file.cjs\"",
             "timeout": 30
           }
         ],
@@ -27,7 +27,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "FILE=$(jq -r \".tool_input.file_path // empty\"); case \"$FILE\" in *pnpm-lock.yaml|*package-lock.json|*.lock|*.env|*.env.*) echo \"[BLOCKED] Lock files and .env files are edited by hand or by the package manager, not by the agent.\" >&2; exit 2 ;; esac"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-files.cjs\"",
+            "timeout": 10
           }
         ],
         "matcher": "Edit|MultiEdit|Write"

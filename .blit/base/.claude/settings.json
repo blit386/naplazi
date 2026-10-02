@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pnpm run format",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/format-file.cjs\"",
             "timeout": 30
           }
         ],
@@ -22,6 +22,16 @@
           }
         ],
         "matcher": "Bash"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-files.cjs\"",
+            "timeout": 10
+          }
+        ],
+        "matcher": "Edit|MultiEdit|Write"
       }
     ],
     "SessionStart": [
