@@ -2,6 +2,18 @@
   "kitVersion": "1.7.1",
   "files": [
     {
+      "path": ".claude/hooks/format-file.cjs",
+      "class": "kit-owned",
+      "kitVersion": "1.7.1",
+      "sha256": "f5da5695839801d0cb8f0fb460d26414c93502d9396fc2c4a5d706f63f9a4905"
+    },
+    {
+      "path": ".claude/hooks/protect-files.cjs",
+      "class": "kit-owned",
+      "kitVersion": "1.7.1",
+      "sha256": "892b2b120a84f3e28dfaa5cfb7419e11812da36c10c64d6c97dd4bf1846201e0"
+    },
+    {
       "path": ".claude/hooks/session-start.sh",
       "class": "kit-owned",
       "kitVersion": "1.7.0",
@@ -29,7 +41,7 @@
       "path": ".claude/settings.json",
       "class": "kit-owned",
       "kitVersion": "1.7.1",
-      "sha256": "5115da0d9098433b6b90a52b9656742a7ce6c4b75dd111951bbde4631b39330b"
+      "sha256": "d88fa1eaedda36ea7a75350f9fa4c118781b81a807203b8679c5a1718b32ce03"
     },
     {
       "path": ".claude/skills/add-crt-effect/SKILL.md",
@@ -203,7 +215,13 @@
       "path": ".cursor/hooks.json",
       "class": "kit-owned",
       "kitVersion": "1.7.1",
-      "sha256": "337c1803a420babf8481ba5ffc4abe51d79171603d626cbef0d397a92e469bd1"
+      "sha256": "541a49f78d34735a6d5bd83705a9845311f3fa2b9b9f3d843eb03283bf51c402"
+    },
+    {
+      "path": ".cursor/hooks/format-file.cjs",
+      "class": "kit-owned",
+      "kitVersion": "1.7.1",
+      "sha256": "f5da5695839801d0cb8f0fb460d26414c93502d9396fc2c4a5d706f63f9a4905"
     },
     {
       "path": ".cursor/hooks/shell-safety-run.cjs",
@@ -455,7 +473,7 @@
       "path": "CLAUDE.md",
       "class": "shared",
       "kitVersion": "1.7.1",
-      "sha256": "933bb03a5f9abf1496085cedecebc5ceca7fb0683116635c52507b9986a8d95f"
+      "sha256": "9d1e3d31a0260ffc29257383c71239393b66cc2c472908e8839ffcb0167b46e0"
     },
     {
       "path": "docs/audio.md",
@@ -509,7 +527,7 @@
       "path": "docs/when-something-breaks.md",
       "class": "kit-owned",
       "kitVersion": "1.7.1",
-      "sha256": "96107c87518a02a242422b970200c383ac12c9914a978b25c1e43f703f91534d"
+      "sha256": "cc8cfd526b549f2967139ac6367bc5f6f90d7e891410635580ebe2b146d6f994"
     },
     {
       "path": "index.html",

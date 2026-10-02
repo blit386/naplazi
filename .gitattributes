@@ -24,6 +24,7 @@ pnpm-lock.yaml linguist-generated
 *.woff2 binary
 *.ttf binary
 *.otf binary
+*.btfont binary
 *.pdf binary
 *.zip binary
 *.rar binary

@@ -3,7 +3,7 @@
   "hooks": {
     "afterFileEdit": [
       {
-        "command": "sh scripts/format-file.sh",
+        "command": "node .cursor/hooks/format-file.cjs",
         "matcher": "Write|TabWrite",
         "timeout": 30,
         "failClosed": false

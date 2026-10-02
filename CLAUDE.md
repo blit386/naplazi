@@ -148,8 +148,9 @@ Add project-specific notes for Claude here. This section is yours.
 - Engine source edits full-reload the page by design; game code and `public/` assets still hot-swap.
 - `pnpm run deploy` builds and uploads to Cloudflare Pages (project `naplazi`) from this machine.
 - Tooling mirrors blit386: pre-commit runs lint-staged (Biome, Prettier, cspell) and commitlint; pre-push and CI run
-  `pnpm run preflight` (format:check, typecheck, spellcheck, knip, build). Agent edits are formatted per file by
-  `scripts/format-file.sh`. New words the spellchecker flags go in `cspell.json`.
+  `pnpm run preflight` (format:check, typecheck, spellcheck, knip, build). Agent edits are formatted per file by the
+  kit's `format-file.cjs` hook, and its `protect-files.cjs` hook keeps agents out of lock files and `.env` files. New
+  words the spellchecker flags go in `cspell.json`.
 - Agents play-test with `pnpm run play` (`scripts/play.mjs`, drives the local Chrome or Edge through playwright-core):
   see the `test-the-game` skill (`.claude/skills/` and `.cursor/skills/`, kept identical by hand: the kit's generic copy
   lags this one). Both are hand-written stand-ins until the kit ships `blit play` and its own skill (BT-528). Dev builds
